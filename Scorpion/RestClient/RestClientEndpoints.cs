@@ -18,12 +18,10 @@ namespace Scorpion.RestClient
     public partial class RestClient : RestClientBase
     {
         private string _baseUrl = "/";
-        private System.Net.Http.HttpClient _httpClient;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
     
-        public RestClient(System.Net.Http.HttpClient httpClient)
+        public RestClient()
         {
-            _httpClient = httpClient; 
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(() => 
             {
                 var settings = new Newtonsoft.Json.JsonSerializerSettings();
@@ -60,7 +58,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -109,6 +107,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -127,7 +127,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -179,6 +179,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -197,7 +199,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -249,6 +251,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -271,7 +275,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -320,6 +324,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -342,7 +348,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -387,6 +393,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -405,7 +413,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users/current");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -454,6 +462,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -472,7 +482,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users/login");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -524,6 +534,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -542,7 +554,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users/roles");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -591,6 +603,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -613,7 +627,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/users/{id}/roles");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -662,6 +676,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -688,7 +704,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{rid}", System.Uri.EscapeDataString(ConvertToString(rid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -737,6 +753,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -763,7 +781,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{rid}", System.Uri.EscapeDataString(ConvertToString(rid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -813,6 +831,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -839,7 +859,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{rid}", System.Uri.EscapeDataString(ConvertToString(rid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -884,6 +904,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -902,7 +924,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/roles");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -951,6 +973,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -973,7 +997,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/roles/{rid}");
             urlBuilder_.Replace("{rid}", System.Uri.EscapeDataString(ConvertToString(rid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1022,6 +1046,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1040,7 +1066,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1089,6 +1115,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1107,7 +1135,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/passwords");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1156,6 +1184,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1174,7 +1204,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/passwords");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1226,6 +1256,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1244,7 +1276,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/passwords");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1296,6 +1328,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1314,7 +1348,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/hashes");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1363,6 +1397,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1381,7 +1417,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/hashes");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1433,6 +1469,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1451,7 +1489,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/hashes");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1503,6 +1541,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1521,7 +1561,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/tickets");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1570,6 +1610,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1588,7 +1630,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/tickets");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1640,6 +1682,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1658,7 +1702,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/tickets");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1710,6 +1754,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1732,7 +1778,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1781,6 +1827,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1803,7 +1851,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1848,6 +1896,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1870,7 +1920,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/passwords/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1919,6 +1969,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -1941,7 +1993,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/hashes/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -1990,6 +2042,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2012,7 +2066,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/credentials/tickets/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2061,6 +2115,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2079,7 +2135,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/embeddedresources");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2128,6 +2184,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2146,7 +2204,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/embeddedresources");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2198,6 +2256,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2216,7 +2276,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/embeddedresources");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2268,6 +2328,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2290,7 +2352,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/embeddedresources/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2339,6 +2401,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2361,7 +2425,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/embeddedresources/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2406,6 +2470,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2424,7 +2490,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2473,6 +2539,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2491,7 +2559,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2543,6 +2611,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2565,7 +2635,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2614,6 +2684,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2632,7 +2704,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events/time");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2681,6 +2753,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2703,7 +2777,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events/range/{fromdate}");
             urlBuilder_.Replace("{fromdate}", System.Uri.EscapeDataString(ConvertToString(fromdate, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2752,6 +2826,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2778,7 +2854,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{fromdate}", System.Uri.EscapeDataString(ConvertToString(fromdate, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{todate}", System.Uri.EscapeDataString(ConvertToString(todate, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2827,6 +2903,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2849,7 +2927,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events/download/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2898,6 +2976,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2920,7 +3000,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events/download/{id}/content");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -2969,6 +3049,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -2987,7 +3069,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/events/download");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3039,6 +3121,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3057,7 +3141,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3106,6 +3190,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3124,7 +3210,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3176,6 +3262,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3194,7 +3282,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3246,6 +3334,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3268,7 +3358,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3317,6 +3407,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3339,7 +3431,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3384,6 +3476,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3406,7 +3500,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{name}");
             urlBuilder_.Replace("{name}", System.Uri.EscapeDataString(ConvertToString(name, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3455,6 +3549,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3477,7 +3573,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/guid/{guid}");
             urlBuilder_.Replace("{guid}", System.Uri.EscapeDataString(ConvertToString(guid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3526,6 +3622,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3548,7 +3646,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/originalguid/{serverguid}");
             urlBuilder_.Replace("{serverguid}", System.Uri.EscapeDataString(ConvertToString(serverguid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3597,6 +3695,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3623,7 +3723,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{cid}", System.Uri.EscapeDataString(ConvertToString(cid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3672,6 +3772,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3694,7 +3796,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}/compileexecutor");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3743,6 +3845,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3761,7 +3865,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/commands");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3810,6 +3914,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3828,7 +3934,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/commands");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3880,6 +3986,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3898,7 +4006,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/commands");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -3950,6 +4058,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -3972,7 +4082,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/commands/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4021,6 +4131,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4043,7 +4155,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/commands/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4088,6 +4200,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4106,7 +4220,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunttasks");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4155,6 +4269,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4173,7 +4289,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunttasks");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4225,6 +4341,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4243,7 +4361,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunttasks");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4295,6 +4413,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4317,7 +4437,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunttasks/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4366,6 +4486,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4388,7 +4510,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunttasks/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4433,6 +4555,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4455,7 +4579,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunttasks/{taskname}");
             urlBuilder_.Replace("{taskname}", System.Uri.EscapeDataString(ConvertToString(taskname, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4504,6 +4628,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4522,7 +4648,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/taskings");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4571,6 +4697,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4589,7 +4717,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/taskings");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4641,6 +4769,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4659,7 +4789,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/taskings");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4711,6 +4841,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4733,7 +4865,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}/taskings");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4782,6 +4914,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4804,7 +4938,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}/taskings/search");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4853,6 +4987,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4875,7 +5011,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}/taskings/uninitialized");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4924,6 +5060,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -4946,7 +5084,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/{id}/taskings/search/uninitialized");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -4995,6 +5133,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5017,7 +5157,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/taskings/{tid}");
             urlBuilder_.Replace("{tid}", System.Uri.EscapeDataString(ConvertToString(tid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5066,6 +5206,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5088,7 +5230,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/taskings/{tid}");
             urlBuilder_.Replace("{tid}", System.Uri.EscapeDataString(ConvertToString(tid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5133,6 +5275,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5155,7 +5299,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/grunts/taskings/{taskingname}");
             urlBuilder_.Replace("{taskingname}", System.Uri.EscapeDataString(ConvertToString(taskingname, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5204,6 +5348,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5222,7 +5368,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/implanttemplates");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5271,6 +5417,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5289,7 +5437,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/implanttemplates");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5341,6 +5489,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5359,7 +5509,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/implanttemplates");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5411,6 +5561,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5433,7 +5585,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/implanttemplates/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5482,6 +5634,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5504,7 +5658,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/implanttemplates/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5549,6 +5703,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5571,7 +5727,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/implanttemplates/{name}");
             urlBuilder_.Replace("{name}", System.Uri.EscapeDataString(ConvertToString(name, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5620,6 +5776,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5638,7 +5796,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/results");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5687,6 +5845,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5705,7 +5865,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5754,6 +5914,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5772,7 +5934,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5824,6 +5986,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5842,7 +6006,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5894,6 +6058,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5912,7 +6078,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/files");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -5961,6 +6127,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -5979,7 +6147,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/networks");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6028,6 +6196,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6046,7 +6216,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/targets");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6095,6 +6265,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6117,7 +6289,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6166,6 +6338,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6188,7 +6362,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6233,6 +6407,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6255,7 +6431,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/files/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6304,6 +6480,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6326,7 +6504,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/networks/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6375,6 +6553,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6397,7 +6577,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/indicators/targets/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6446,6 +6626,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6464,7 +6646,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6513,6 +6695,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6531,7 +6715,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/binary");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6580,6 +6764,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6598,7 +6784,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/binary");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6650,6 +6836,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6668,7 +6856,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/binary");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6718,6 +6906,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6736,7 +6926,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/binary/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6788,6 +6978,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6806,7 +6998,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/powershell");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6855,6 +7047,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6873,7 +7067,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/powershell");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6925,6 +7119,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -6943,7 +7139,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/powershell");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -6993,6 +7189,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7011,7 +7209,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/powershell/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7063,6 +7261,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7081,7 +7281,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/msbuild");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7130,6 +7330,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7148,7 +7350,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/msbuild");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7200,6 +7402,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7218,7 +7422,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/msbuild");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7268,6 +7472,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7286,7 +7492,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/msbuild/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7338,6 +7544,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7356,7 +7564,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/installutil");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7405,6 +7613,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7423,7 +7633,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/installutil");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7475,6 +7685,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7493,7 +7705,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/installutil");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7543,6 +7755,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7561,7 +7775,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/installutil/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7613,6 +7827,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7631,7 +7847,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wmic");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7680,6 +7896,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7698,7 +7916,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wmic");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7750,6 +7968,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7768,7 +7988,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wmic");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7818,6 +8038,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7836,7 +8058,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wmic/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7888,6 +8110,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7906,7 +8130,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/regsvr32");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -7955,6 +8179,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -7973,7 +8199,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/regsvr32");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8025,6 +8251,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8043,7 +8271,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/regsvr32");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8093,6 +8321,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8111,7 +8341,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/regsvr32/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8163,6 +8393,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8181,7 +8413,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/mshta");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8230,6 +8462,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8248,7 +8482,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/mshta");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8300,6 +8534,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8318,7 +8554,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/mshta");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8368,6 +8604,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8386,7 +8624,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/mshta/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8438,6 +8676,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8456,7 +8696,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/cscript");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8505,6 +8745,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8523,7 +8765,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/cscript");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8575,6 +8817,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8593,7 +8837,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/cscript");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8643,6 +8887,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8661,7 +8907,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/cscript/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8713,6 +8959,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8731,7 +8979,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wscript");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8780,6 +9028,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8798,7 +9048,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wscript");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8850,6 +9100,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8868,7 +9120,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wscript");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8918,6 +9170,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -8936,7 +9190,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/launchers/wscript/hosted");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -8988,6 +9242,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9006,7 +9262,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/types");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9055,6 +9311,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9077,7 +9335,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/types/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9126,6 +9384,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9144,7 +9404,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9193,6 +9453,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9211,7 +9473,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9263,6 +9525,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9285,7 +9549,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9334,6 +9598,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9356,7 +9622,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9401,6 +9667,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9423,7 +9691,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/http/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9472,6 +9740,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9490,7 +9760,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/http");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9542,6 +9812,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9560,7 +9832,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/http");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9612,6 +9884,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9634,7 +9908,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/{id}/hostedfiles");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9683,6 +9957,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9705,7 +9981,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/{id}/hostedfiles");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9757,6 +10033,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9779,7 +10057,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/listeners/{id}/hostedfiles");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9831,6 +10109,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9857,7 +10137,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{hfid}", System.Uri.EscapeDataString(ConvertToString(hfid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9906,6 +10186,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9932,7 +10214,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{hfid}", System.Uri.EscapeDataString(ConvertToString(hfid, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -9977,6 +10259,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -9995,7 +10279,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10044,6 +10328,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10062,7 +10348,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10114,6 +10400,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10132,7 +10420,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10184,6 +10472,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10206,7 +10496,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10255,6 +10545,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10277,7 +10569,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10322,6 +10614,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10340,7 +10634,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/http");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10389,6 +10683,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10407,7 +10703,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/http");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10459,6 +10755,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10477,7 +10775,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/http");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10529,6 +10827,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10551,7 +10851,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/http/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10600,6 +10900,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10622,7 +10924,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/profiles/http/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10667,6 +10969,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10685,7 +10989,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referenceassemblies");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10734,6 +11038,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10752,7 +11058,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referenceassemblies");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10804,6 +11110,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10822,7 +11130,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referenceassemblies");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10874,6 +11182,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10896,7 +11206,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referenceassemblies/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -10945,6 +11255,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -10967,7 +11279,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referenceassemblies/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11012,6 +11324,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -11030,7 +11344,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referencesourcelibraries");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11079,6 +11393,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -11097,7 +11413,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referencesourcelibraries");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11149,6 +11465,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -11167,7 +11485,7 @@ namespace Scorpion.RestClient
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referencesourcelibraries");
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11219,6 +11537,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -11241,7 +11561,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referencesourcelibraries/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11290,6 +11610,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     
@@ -11312,7 +11634,7 @@ namespace Scorpion.RestClient
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/referencesourcelibraries/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
     
-            var client_ = _httpClient;
+            var client_ = await CreateHttpClientAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
@@ -11357,6 +11679,8 @@ namespace Scorpion.RestClient
             }
             finally
             {
+                if (client_ != null)
+                    client_.Dispose();
             }
         }
     

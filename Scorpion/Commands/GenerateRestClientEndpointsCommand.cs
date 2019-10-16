@@ -25,6 +25,7 @@ namespace Scorpion.Commands
                 ClassName = "RestClient",
                 ClientBaseClass = "RestClientBase",
                 UseHttpClientCreationMethod = true,
+                InjectHttpClient = false,
                 CSharpGeneratorSettings =
                 {
                     Namespace = "Scorpion.RestClient"
