@@ -16,16 +16,16 @@ namespace Scorpion.RestClient
             return client;
         }
 
-        // partial void PrepareRequest(HttpClient request, ref string url)
-        // {
-        //     // TODO: Prepare the request and modify the URL if needed
-        //     Console.WriteLine("Preparing Request");
-        // }
+        partial void PrepareRequest(HttpClient request, ref string url)
+        {
+            // TODO: Prepare the request and modify the URL if needed
+            Console.WriteLine("Preparing Request");
+        }
 
-        // partial void ProcessResponse(HttpClient request, HttpResponseMessage response)
-        // {
-        //     // TODO: Post-process the response
-        //     Console.WriteLine("Procesing Request");
-        // }
+        partial void ProcessResponse(HttpClient request, HttpResponseMessage response)
+        {
+            // TODO: Post-process the response
+            Console.WriteLine("Procesing Request");
+        }
     }
 }

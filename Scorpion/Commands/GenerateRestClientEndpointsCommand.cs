@@ -9,7 +9,7 @@ using NSwag.CodeGeneration.CSharp;
 namespace Scorpion.Commands
 {
     [Command("generate")]
-    public class GenerateClientCommand
+    public class GenerateRestClientEndpointsCommand
     {
         public ScorpionCommand Parent { get; set; }
 
