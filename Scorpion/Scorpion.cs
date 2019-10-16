@@ -1,9 +1,5 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using Scorpion.Commands;
-// using Curator.Data.EntityFramework.Context;
-// using Curator.Data.EntityFramework.Sqlite;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,6 +33,7 @@ namespace Scorpion
         public static ServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
+            // bind RestClientBase instance to the class.
             return services.BuildServiceProvider();
         }
     }
