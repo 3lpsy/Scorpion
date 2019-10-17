@@ -43,6 +43,7 @@ namespace Scorpion
                 client.UserName = Environment.GetEnvironmentVariable("COVENANT_USERNAME") ?? "";
                 client.Password = Environment.GetEnvironmentVariable("COVENANT_PASSWORD") ?? "";
                 client.IgnoreSSL = Environment.GetEnvironmentVariable("COVENANT_IGNORE_SSL") == "1" ? true : false;
+                // I don't like this, needs a log level and logger, will be removed later
                 client.Debug = Environment.GetEnvironmentVariable("COVENANT_HTTP_DEBUG") == "1" ? true : false;
                 return client;
             });
