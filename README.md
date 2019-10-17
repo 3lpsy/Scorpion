@@ -3,8 +3,6 @@
 This is an attempt to generate a CLI interface for a Covenant C2 server. It's also an opportunity for me to experiment with Dotnet Core. 
 
 ## TODO:
-- Ability to add user
-- Ability to remove user but not the last admin.
 - Ability to list listeners
 - Ability to add listeners
 - Ability to remove listeners
@@ -22,7 +20,7 @@ This is an attempt to generate a CLI interface for a Covenant C2 server. It's al
 - COVENANT_USERNAME ("")
 - COVENANT_PASSWORD ("")
 - COVENANT_IGNORE_SSL ("")
-- COVENANT_HTTP_DEBUG ("") - will be phased out
+- COVENANT_HTTP_DEBUG ("") - will be phased out for an actual logger
 
 ## Generated Endpoints
 
@@ -38,7 +36,9 @@ Options:
 Commands:
   add-user
   generate-endpoints
+  get-token
   list-users
+  remove-user
 
 Run 'Scorpion [command] --help' for more information about a command.
 ```
