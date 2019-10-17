@@ -1,5 +1,6 @@
 ﻿using System;
 using Scorpion.Commands;
+using Scorpion.RestClient;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,6 +34,18 @@ namespace Scorpion
         public static ServiceProvider ConfigureServices()
         {
             var services = new ServiceCollection();
+
+            services.AddSingleton<HttpRestClient>((services) =>
+            {
+                HttpRestClient client = new HttpRestClient();
+                client.BaseUrl = Environment.GetEnvironmentVariable("COVENANT_BASE_URL") ?? "https://127.0.0.1:7443";
+                client.CovenantToken = Environment.GetEnvironmentVariable("COVENANT_TOKEN") ?? "";
+                client.UserName = Environment.GetEnvironmentVariable("COVENANT_USERNAME") ?? "";
+                client.Password = Environment.GetEnvironmentVariable("COVENANT_PASSWORD") ?? "";
+                client.IgnoreSSL = Environment.GetEnvironmentVariable("COVENANT_IGNORE_SSL") == "1" ? true : false;
+                client.Debug = Environment.GetEnvironmentVariable("COVENANT_HTTP_DEBUG") == "1" ? true : false;
+                return client;
+            });
             // bind RestClientBase instance to the class.
             return services.BuildServiceProvider();
         }

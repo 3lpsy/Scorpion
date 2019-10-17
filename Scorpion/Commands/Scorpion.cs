@@ -1,4 +1,5 @@
 using System;
+using Scorpion.RestClient;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace Scorpion.Commands
@@ -8,8 +9,11 @@ namespace Scorpion.Commands
     public class ScorpionCommand : IDisposable
     {
 
-        public ScorpionCommand()
+        public HttpRestClient HttpRestClient { get; }
+
+        public ScorpionCommand(HttpRestClient restClient)
         {
+            HttpRestClient = restClient;
         }
 
         private int OnExecute(CommandLineApplication application)

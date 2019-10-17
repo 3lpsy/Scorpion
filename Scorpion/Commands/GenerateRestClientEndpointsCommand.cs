@@ -15,7 +15,6 @@ namespace Scorpion.Commands
 
         public async Task<int> OnExecuteAsync(IConsole console)
         {
-            System.Net.WebClient wclient = new System.Net.WebClient();
 
             string apiJson = System.IO.File.ReadAllText("./../current.api.json");
             var document = await OpenApiDocument.FromJsonAsync(apiJson);

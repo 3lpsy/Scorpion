@@ -15,12 +15,12 @@ namespace Scorpion.RestClient
     using System = global::System;
     
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.1.3.0 (NJsonSchema v10.0.27.0 (Newtonsoft.Json v12.0.0.0))")]
-    public partial class RestClient : RestClientBase
+    public partial class HttpRestClient : HttpRestClientBase
     {
         private string _baseUrl = "/";
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
     
-        public RestClient()
+        public HttpRestClient()
         {
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(() => 
             {
