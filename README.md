@@ -24,6 +24,10 @@ This is an attempt to generate a CLI interface for a Covenant C2 server. It's al
 - COVENANT_IGNORE_SSL ("")
 - COVENANT_HTTP_DEBUG ("") - will be phased out
 
+## Generated Endpoints
+
+Because Covenant uses Swagger, the majority of the API. When "generate-endpoints" is run, the "RestClient/RestClientEndpoints.cs" file will be populated with the necessary client code to consume the API. The "RestClientBase" and "RestClientEndpoints.Extensions" files can be used for wrapping common logic like authentication. In general, generate-endpoints should be run sparingly.
+
 ## Usage
 ```
 Usage: Scorpion [options] [command]
