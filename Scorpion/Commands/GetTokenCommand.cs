@@ -18,7 +18,10 @@ namespace Scorpion.Commands
 
             await Parent.HttpRestClient.EnsureAuthenticated();
 
-            Console.WriteLine($"Token: {Parent.HttpRestClient.CovenantToken}");
+            CovenantUser user = await Parent.HttpRestClient.ApiUsersCurrentGetAsync();
+
+            Console.WriteLine($"Current User: {user.UserName}");
+            Console.WriteLine($"Bearer Token: {Parent.HttpRestClient.CovenantToken}");
 
             return 0;
         }

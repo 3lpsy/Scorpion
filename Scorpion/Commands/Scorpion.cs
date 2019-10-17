@@ -5,7 +5,7 @@ using McMaster.Extensions.CommandLineUtils;
 namespace Scorpion.Commands
 {
 
-    [Subcommand(typeof(AddUserCommand), typeof(ListUsersCommand), typeof(GenerateRestClientEndpointsCommand), typeof(GetTokenCommand))]
+    [Subcommand(typeof(AddUserCommand), typeof(ListUsersCommand), typeof(GenerateRestClientEndpointsCommand), typeof(GetTokenCommand), typeof(RemoveUserCommand))]
     public class ScorpionCommand : IDisposable
     {
 
