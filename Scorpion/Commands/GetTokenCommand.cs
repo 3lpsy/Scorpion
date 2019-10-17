@@ -6,8 +6,8 @@ using Scorpion.RestClient;
 
 namespace Scorpion.Commands
 {
-    [Command("list-users")]
-    public class ListUsersCommand
+    [Command("get-token")]
+    public class GetTokenCommand
     {
         public ScorpionCommand Parent { get; set; }
 
@@ -18,13 +18,8 @@ namespace Scorpion.Commands
 
             await Parent.HttpRestClient.EnsureAuthenticated();
 
-            ICollection<CovenantUser> users = await Parent.HttpRestClient.ApiUsersGetAsync();
+            Console.WriteLine($"Token: {Parent.HttpRestClient.CovenantToken}");
 
-            Console.WriteLine("Users: ");
-            foreach (CovenantUser user in users)
-            {
-                Console.WriteLine($"      {user.UserName} - {user.Id}");
-            }
             return 0;
         }
     }

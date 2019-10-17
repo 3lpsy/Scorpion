@@ -112,7 +112,8 @@ namespace Scorpion.RestClient
             return !String.IsNullOrEmpty(CovenantToken);
         }
 
-        private static string GetPassword()
+        // TODO: move somewhere else
+        public string GetPassword()
         {
             string password = "";
             ConsoleKeyInfo nextKey = Console.ReadKey(true);
