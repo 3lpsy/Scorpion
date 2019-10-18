@@ -1,8 +1,14 @@
 ﻿using System;
-using Scorpion.Commands;
-using Scorpion.RestClient;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Rest;
+using McMaster.Extensions.CommandLineUtils;
+using Scorpion.Api;
+
+using Scorpion.Commands;
+// using Scorpion.RestClient;
+// using Covenant.API;
+
+using System.Net.Http;
 
 namespace Scorpion
 {
@@ -35,20 +41,26 @@ namespace Scorpion
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<HttpRestClient>((services) =>
+            services.AddSingleton<ApiFactory>((s) =>
             {
-                HttpRestClient client = new HttpRestClient();
-                client.BaseUrl = Environment.GetEnvironmentVariable("COVENANT_BASE_URL") ?? "https://127.0.0.1:7443";
-                client.CovenantToken = Environment.GetEnvironmentVariable("COVENANT_TOKEN") ?? "";
-                client.UserName = Environment.GetEnvironmentVariable("COVENANT_USERNAME") ?? "";
-                client.Password = Environment.GetEnvironmentVariable("COVENANT_PASSWORD") ?? "";
-                client.IgnoreSSL = Environment.GetEnvironmentVariable("COVENANT_IGNORE_SSL") == "1" ? true : false;
-                // I don't like this, needs a log level and logger, will be removed later
-                client.Debug = Environment.GetEnvironmentVariable("COVENANT_HTTP_DEBUG") == "1" ? true : false;
-                return client;
+                var profile = BuildApiProfile();
+                // Console.WriteLine(profile);
+                return new ApiFactory(profile);
             });
-            // bind RestClientBase instance to the class.
             return services.BuildServiceProvider();
+        }
+
+        public static ApiProfile BuildApiProfile()
+        {
+            var profile = new ApiProfile()
+            {
+                BaseUrl = Environment.GetEnvironmentVariable("COVENANT_BASE_URL") ?? "https://127.0.0.1:7443",
+                CovenantToken = Environment.GetEnvironmentVariable("COVENANT_TOKEN") ?? "",
+                UserName = Environment.GetEnvironmentVariable("COVENANT_USERNAME") ?? "",
+                Password = Environment.GetEnvironmentVariable("COVENANT_PASSWORD") ?? "",
+                IgnoreSSL = Environment.GetEnvironmentVariable("COVENANT_IGNORE_SSL") == "1" ? true : false
+            };
+            return profile;
         }
     }
 }

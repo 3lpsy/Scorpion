@@ -1,23 +1,25 @@
 using System;
-using Scorpion.RestClient;
 using McMaster.Extensions.CommandLineUtils;
+using Scorpion.Api;
 
 namespace Scorpion.Commands
 {
 
-    [Subcommand(typeof(AddUserCommand), typeof(ListUsersCommand), typeof(GenerateRestClientEndpointsCommand), typeof(GetTokenCommand), typeof(RemoveUserCommand))]
+    // [Subcommand(typeof(AddUserCommand), typeof(ListUsersCommand), typeof(GetTokenCommand), typeof(RemoveUserCommand))]
+    [Subcommand(typeof(ListUsersCommand))]
     public class ScorpionCommand : IDisposable
     {
 
-        public HttpRestClient HttpRestClient { get; }
+        public ApiFactory ApiFactory { get; set; }
 
-        public ScorpionCommand(HttpRestClient restClient)
+        public ScorpionCommand(ApiFactory apiFactory)
         {
-            HttpRestClient = restClient;
+            ApiFactory = apiFactory;
         }
 
         private int OnExecute(CommandLineApplication application)
         {
+
             application.ShowHelp(false);
             return 0;
         }
