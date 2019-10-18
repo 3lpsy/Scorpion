@@ -51,7 +51,11 @@ namespace Scorpion.Api
             {
                 return new TokenCredentials(Profile.CovenantToken);
             }
-            return new TokenCredentials("");
+            return new BasicAuthenticationCredentials
+            {
+                UserName = Profile.UserName,
+                Password = Profile.Password
+            };
         }
 
         public HttpClientHandler MakeUnsafeSSlHttpHandler()

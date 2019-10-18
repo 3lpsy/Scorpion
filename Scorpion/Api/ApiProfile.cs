@@ -12,7 +12,7 @@ namespace Scorpion.Api
 
         public bool HasCovenantToken()
         {
-            return String.IsNullOrEmpty(CovenantToken);
+            return !String.IsNullOrEmpty(CovenantToken);
         }
 
         public override string ToString()
