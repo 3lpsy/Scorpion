@@ -59,7 +59,7 @@ namespace Scorpion.Jobs
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
         Console.WriteLine($"Generating csproj for {aGuid}");
 
-        var csproj = GenerateCsprojFile(aGuid);
+        var csproj = GenerateCsprojFile(aGuid, dataDir);
         var csprojName = aGuid + ".csproj";
         var csprojPath = Path.Join(dataDir, csprojName);
         Console.WriteLine($"Saving csproj for {aGuid}");
@@ -189,13 +189,13 @@ Write-Output ""Error"";
 	<Var name=""OutPath"" value=""{1}"" />
 	<Var name=""KeepPublicApi"" value=""false"" />
 	<Var name=""HidePrivateApi"" value=""true"" />
-	<Module file=""{1}\{0}.exe"" />
-</Obfuscator>", aGuid, dataDir);
+	<Module file=""{1}"" />
+</Obfuscator>", dataDir, Path.Join(dataDir, aGuid + ".exe"));
       return obfuscarXml;
     }
 
 
-    public string GenerateCsprojFile(string aGuid)
+    public string GenerateCsprojFile(string aGuid, string dataDir)
     {
       var csproj = String.Format(@"
 <?xml version=""1.0"" encoding=""utf-8""?>
@@ -220,7 +220,7 @@ Write-Output ""Error"";
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>.\</OutputPath>
+    <OutputPath>{1}</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -229,7 +229,7 @@ Write-Output ""Error"";
     <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>.\</OutputPath>
+    <OutputPath>{1}</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -256,7 +256,7 @@ Write-Output ""Error"";
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {{{{0}}.</ErrorText>
     </PropertyGroup>
   </Target>
-</Project>", aGuid);
+</Project>", aGuid, dataDir);
       return csproj;
     }
   }
