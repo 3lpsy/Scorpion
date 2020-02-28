@@ -5,6 +5,8 @@ using McMaster.Extensions.CommandLineUtils;
 using Scorpion.Api;
 
 using Scorpion.Commands;
+using Scorpion.Exceptions;
+
 // using Scorpion.RestClient;
 // using Covenant.API;
 
@@ -28,14 +30,25 @@ namespace Scorpion
 
             try
             {
-                return app.Execute(args);
+                Environment.Exit(app.Execute(args));
             }
             catch (UnrecognizedCommandParsingException ex)
             {
                 Console.WriteLine($"Parsing Error: {ex.Message}");
                 app.ShowHelp();
-                return 1;
+                Environment.Exit(1);
             }
+            catch (AppException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(1);
+            }
+            catch (MissingParameterException ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(1);
+            }
+            return 1;
         }
         public static ServiceProvider ConfigureServices()
         {

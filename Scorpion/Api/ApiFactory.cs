@@ -4,6 +4,7 @@ using System.Net.Http;
 using Microsoft.Rest;
 using Covenant.API;
 using Covenant.API.Models;
+using Scorpion.Exceptions;
 
 namespace Scorpion.Api
 {
@@ -21,10 +22,10 @@ namespace Scorpion.Api
         {
             if (Profile.IgnoreSSL)
             {
-                Console.WriteLine("Creating insecure SSL Covenant API");
+                // Console.WriteLine("Creating insecure SSL Covenant API");
                 return new CovenantAPI(new System.Uri(Profile.BaseUrl), MakeCredentials(), MakeUnsafeSSlHttpHandler());
             }
-            Console.WriteLine("Creating Covenant API");
+            // Console.WriteLine("Creating Covenant API");
             return new CovenantAPI(new System.Uri(Profile.BaseUrl), MakeCredentials());
         }
 
@@ -32,10 +33,18 @@ namespace Scorpion.Api
         {
             if (!Profile.HasCovenantToken())
             {
-                Console.WriteLine("Authenticating API");
-                var result = await Api().ApiUsersLoginPostWithHttpMessagesAsync(ProfileUserLogin());
-                Profile.CovenantToken = result.Body.CovenantToken;
-                Console.WriteLine($"TOKEN: {Profile.CovenantToken}");
+                var api = Api();
+                // Console.WriteLine("Authenticating to API");
+                try
+                {
+                    var result = await api.ApiUsersLoginPostWithHttpMessagesAsync(ProfileUserLogin());
+                    Profile.CovenantToken = result.Body.CovenantToken;
+                    // Console.WriteLine($"TOKEN: {Profile.CovenantToken}");
+                }
+                catch (HttpOperationException ex)
+                {
+                    throw new AppException($"Error authenticating to server: {ex.Message}");
+                }
             }
             return Api();
         }
