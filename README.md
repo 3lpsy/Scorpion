@@ -1,10 +1,8 @@
 # Scorpion
 
-This is an attempt to generate a CLI interface for a Covenant C2 server. It's also an opportunity for me to experiment with Dotnet Core. 
+This is an attempt to generate a CLI interface for a Covenant C2 server. The main goal is to setup a way to automatically generate a listener and multiple obfuscated SMB grunts automatically. This project is not meant to be used on actual engagements and is instead targeted at lab envrionments.
 
 ## TODO:
-- Ability to list listeners
-- Ability to add listeners
 - Ability to remove listeners
 - Ability to create and generate launcher 
 - Ability to list grunts
@@ -16,29 +14,31 @@ This is an attempt to generate a CLI interface for a Covenant C2 server. It's al
 ## Supported Environment Variables:
 
 - COVENANT_BASE_URL ("https://127.0.0.1:7443")
-- COVENANT_TOKEN ("")
 - COVENANT_USERNAME ("")
 - COVENANT_PASSWORD ("")
 - COVENANT_IGNORE_SSL ("")
-- COVENANT_HTTP_DEBUG ("") - will be phased out for an actual logger
+- COVENANT_TOKEN ("")
 
-## Generated Endpoints
-
-Because Covenant uses Swagger, the majority of the API. When "generate-endpoints" is run, the "RestClient/RestClientEndpoints.cs" file will be populated with the necessary client code to consume the API. The "RestClientBase" and "RestClientEndpoints.Extensions" files can be used for wrapping common logic like authentication. In general, generate-endpoints should be run sparingly.
 
 ## Usage
 ```
 Usage: Scorpion [options] [command]
 
 Options:
-  -?|-h|--help        Show help information
+  -u|--username    Covenant Username
+  -p|--password    Covenant Password
+  -s|--server      Covenant Base URL
+  -i|--ignore-ssl  Ignore Covenant SSL Errros
+  -?|-h|--help     Show help information
 
 Commands:
-  add-user
-  generate-endpoints
-  get-token
-  list-users
-  remove-user
+  addlistener      Add HTTP Listener
+  adduser          Add new user
+  listeners        List Listeners
+  rmuser           Remove user by username
+  token            Print covenant token to console
+  users            List users
 
 Run 'Scorpion [command] --help' for more information about a command.
+
 ```
