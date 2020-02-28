@@ -2,15 +2,16 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
 
 
 
-using Microsoft.Build;
-using Microsoft.Build.Engine;
-using Microsoft.Build.Evaluation;
+// using Microsoft.Build;
+// using Microsoft.Build.Engine;
+// using Microsoft.Build.Evaluation;
 
 using Covenant.API;
 using Covenant.API.Models;
@@ -97,10 +98,26 @@ namespace Scorpion.Jobs
         Console.WriteLine("Saving SMB Grunt Stager Code");
         File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
         Console.WriteLine("Loading csproj for prgramatic build");
-        var collection = ProjectCollection.GlobalProjectCollection;
-        var project = collection.LoadProject(csprojPath);
-        project.SetProperty("Configuration", "Release");
-        project.Build();
+
+        // var collection = ProjectCollection.GlobalProjectCollection;
+        // var project = collection.LoadProject(csprojPath);
+        // project.SetProperty("Configuration", "Release");
+        // project.Build();
+
+        Console.WriteLine("Building project via msbuild")
+        Process p = new Process();
+        ProcessStartInfo startInfo = new ProcessStartInfo();
+        // Redirect the output stream of the child process.
+        startInfo.UseShellExecute = false;
+        startInfo.RedirectStandardOutput = true;
+        startInfo.WorkingDirectory = projDir;
+        startInfo.FileName = "msbuild.exe";
+        startInfo.Arguments = $"{csprojName} /p:Configuration=Release";
+        p.StartInfo = startInfo;
+        p.Start();
+        string output = p.StandardOutput.ReadToEnd();
+        p.WaitForExit();
+        Console.WriteLine(output);
 
         // msbuild csproj
         // obsfucate output
