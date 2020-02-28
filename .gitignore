@@ -2,7 +2,8 @@
 covenant.db
 covenant.db-journal
 Scorpion/global.json
-
+Scorpion/Data/*
+!Scorpion/Data/.gitkeep
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
