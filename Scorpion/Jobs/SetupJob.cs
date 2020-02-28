@@ -104,7 +104,7 @@ namespace Scorpion.Jobs
         // project.SetProperty("Configuration", "Release");
         // project.Build();
 
-        Console.WriteLine("Building project via msbuild")
+        Console.WriteLine("Building project via msbuild");
         Process p = new Process();
         ProcessStartInfo startInfo = new ProcessStartInfo();
         // Redirect the output stream of the child process.
