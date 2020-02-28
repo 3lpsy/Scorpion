@@ -6,16 +6,12 @@ using Covenant.API;
 using Covenant.API.Models;
 using Scorpion.Commands;
 using Scorpion.Jobs;
-using Scorpion.Exceptions;
 
-namespace Scorpion.Commands.Meta
+namespace Scorpion.Commands.Grunt
 {
-  [Command("setup", Description = "Setup")]
-  public class SetupCommand : Command
+  [Command("templates", Description = "List Implant Templates")]
+  public class ListImplantTemplatesCommand : Command
   {
-    [Argument(0, name: "ConnectAddress")]
-    public string ConnectAddress { get; set; }
-
     public async Task<int> OnExecuteAsync(IConsole console)
     {
       await SetupCommandAsync(console, true, true);
@@ -23,8 +19,8 @@ namespace Scorpion.Commands.Meta
     }
     public async Task<int> RunAsync(IConsole console)
     {
-      if (String.IsNullOrEmpty(ConnectAddress)) throw new MissingParameterException(nameof(ConnectAddress));
-      return await new SetupJob(console, Api).RunAsync(ConnectAddress);
+
+      return await new ListImplantTemplatesJob(console, Api).RunAsync();
     }
   }
 }

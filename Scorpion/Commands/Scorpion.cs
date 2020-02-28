@@ -4,6 +4,7 @@ using Scorpion.Api;
 using Scorpion.Commands.User;
 using Scorpion.Commands.Listener;
 using Scorpion.Commands.Meta;
+using Scorpion.Commands.Grunt;
 
 namespace Scorpion.Commands
 {
@@ -15,8 +16,10 @@ namespace Scorpion.Commands
       typeof(GetTokenCommand),
       typeof(ListListenersCommand),
       typeof(AddListenerCommand),
+      typeof(ListImplantTemplatesCommand),
+
       typeof(RemoveListenerCommand),
-    typeof(SetupCommand)
+      typeof(SetupCommand)
 
   )]
   public class ScorpionCommand : IDisposable

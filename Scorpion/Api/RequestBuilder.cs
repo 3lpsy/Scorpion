@@ -164,6 +164,32 @@ namespace Scorpion.Api
       throw new AppException($"Received API Error: No Profile found for name.");
     }
 
+    public async Task<IList<ImplantTemplate>> GetImplantTemplates()
+    {
+      try {
+        return await MakeGetImplantTemplates();
+      } catch (HttpOperationException ex) {
+        throw new AppException($"Received API Error: {ex.Message}");
+      }
+    }
+
+    public async Task<IList<ImplantTemplate>> MakeGetImplantTemplates()
+    {
+      var result = await Api.ApiImplanttemplatesGetWithHttpMessagesAsync();
+      return result.Body;
+    }
+
+    public async Task<ImplantTemplate> GetImplantTemplateByName(string templateName)
+    {
+      var templates = await GetImplantTemplates();
+
+      foreach (ImplantTemplate template in templates) {
+        if (template.Name.ToLower() == templateName.ToLower()) {
+          return template;
+        }
+      }
+      throw new AppException($"Received API Error: No Profile found for name.");
+    }
 
     public async Task<HttpListener> CreateHttpListener(HttpListener httpListener)
     {

