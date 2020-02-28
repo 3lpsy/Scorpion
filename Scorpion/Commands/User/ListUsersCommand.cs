@@ -9,7 +9,7 @@ using Scorpion.Jobs;
 
 namespace Scorpion.Commands.User
 {
-    [Command("users")]
+    [Command("users", Description = "List users")]
     public class ListUsersCommand : Command
     {
         public async Task<int> OnExecuteAsync(IConsole console)

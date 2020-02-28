@@ -8,9 +8,10 @@ using Microsoft.Rest;
 using Scorpion.Exceptions;
 using Scorpion.Commands;
 using Scorpion.Jobs;
+
 namespace Scorpion.Commands.User
 {
-    [Command("rmuser")]
+    [Command("rmuser", Description = "Remove user by username")]
     public class RemoveUserCommand : Command
     {
 

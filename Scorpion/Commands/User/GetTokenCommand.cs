@@ -8,7 +8,7 @@ using Scorpion.Commands;
 
 namespace Scorpion.Commands.User
 {
-    [Command("token")]
+    [Command("token", Description = "Print covenant token to console")]
     public class GetTokenCommand : Command
     {
         public async Task<int> OnExecuteAsync(IConsole console)

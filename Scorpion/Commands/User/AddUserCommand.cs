@@ -10,7 +10,7 @@ using Scorpion.Jobs;
 
 namespace Scorpion.Commands
 {
-    [Command("adduser")]
+    [Command("adduser", Description = "Add new user")]
     public class AddUserCommand : Command
     {
 
