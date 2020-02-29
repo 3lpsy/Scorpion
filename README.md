@@ -18,7 +18,7 @@ Assuming you've just setup the Covenant server, you can can run the following:
 ```
 $ git clone https://github.com/3lpsy/Scorpion
 $ git clone https://github.com/cobbr/Covenant
-$ cs Covenant/Covenant
+$ cd Covenant/Covenant
 $ dotnet build
 $ cd ../../Scorpion/Scorpion
 $ dotnet run -- -u user -p pass -s https://COVENANT:7443 -i setup --connect-address SOME_IP --connect-port SOME_PORT
