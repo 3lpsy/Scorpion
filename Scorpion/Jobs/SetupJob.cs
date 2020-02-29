@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
 
 
-
+using Microsoft.Win32;
+using System.Runtime.InteropServices;
 // using Microsoft.Build;
 // using Microsoft.Build.Engine;
 // using Microsoft.Build.Evaluation;
@@ -103,22 +104,49 @@ namespace Scorpion.Jobs
         // var project = collection.LoadProject(csprojPath);
         // project.SetProperty("Configuration", "Release");
         // project.Build();
+        if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+          // Registry Code
 
-        Console.WriteLine("Building project via msbuild");
-        Process p = new Process();
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        // Redirect the output stream of the child process.
-        startInfo.UseShellExecute = false;
-        startInfo.RedirectStandardOutput = true;
-        startInfo.WorkingDirectory = projDir;
-        startInfo.FileName = "msbuild.exe";
-        startInfo.Arguments = $"{csprojName} /p:Configuration=Release";
-        p.StartInfo = startInfo;
-        p.Start();
-        string output = p.StandardOutput.ReadToEnd();
-        p.WaitForExit();
-        Console.WriteLine(output);
+          Console.WriteLine("Building project via msbuild");
 
+          var frameworkDir = "C:\\Windows\\Microsoft.Net\\Framework";
+          var candidateDirs = Directory.GetDirectories(frameworkDir);
+          string frameworkVersionDir = "";
+          foreach (string candidate in candidateDirs) {
+            if (candidate.StartsWith("v4.")) {
+              frameworkVersionDir = Path.Join(frameworkDir, candidate);
+              break;
+            }
+          }
+
+          if (!String.IsNullOrEmpty(frameworkVersionDir)) {
+            var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
+            Console.WriteLine($"Msbuild Path: {msbuildPath}");
+            var msbuildArgs = $"{csprojName} /p:Configuration=Release";
+            Console.WriteLine($"Msbuild Args: {msbuildArgs}");
+
+            Process p = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            // Redirect the output stream of the child process.
+            startInfo.UseShellExecute = false;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.WorkingDirectory = projDir;
+            startInfo.FileName = msbuildPath;
+            startInfo.Arguments = msbuildArgs;
+            p.StartInfo = startInfo;
+            Console.WriteLine($"Building...");
+            p.Start();
+            string output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            Console.WriteLine(output);
+
+          } else {
+            Console.WriteLine($"Not able to find directory in {frameworkDir} that starts with 'v4.'. Can't find msbuild.exe");
+          }
+
+        } else {
+          Console.WriteLine("Not on windows. Skipping msbuild.");
+        }
         // msbuild csproj
         // obsfucate output
         // host ob bin at /aGuidob.exe
