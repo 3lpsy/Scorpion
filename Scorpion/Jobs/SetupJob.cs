@@ -85,7 +85,7 @@ namespace Scorpion.Jobs
 
         BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
         var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
-        var smbBinPath = Path.Join(projDir, "GruntStager.exe");
+        var smbBinPath = Path.Join(projDir, "Original.exe");
         Console.WriteLine("Saving Unobfuscated Grunt Binary");
         File.WriteAllBytes(smbBinPath, rawSmbBin);
         var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
