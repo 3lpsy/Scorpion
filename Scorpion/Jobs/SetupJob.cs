@@ -441,7 +441,7 @@ using System.Runtime.InteropServices;
     public string GenerateCsprojFile(string aGuid, string projDir)
     {
       var csproj = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
-<Project ToolsVersion=""15.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+<Project DefaultTarget=""Compile"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
   <PropertyGroup>
     <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
@@ -489,6 +489,14 @@ using System.Runtime.InteropServices;
     <Compile Include=""{0}.cs"" />
     <Compile Include=""Properties\AssemblyInfo.cs"" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=""packages.config"" />
+  </ItemGroup>
+  <Target Name=""EnsureNuGetPackageBuildImports"" BeforeTargets=""PrepareForBuild"">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {{{{0}}.</ErrorText>
+    </PropertyGroup>
+  </Target>
 </Project>", aGuid, projDir);
       return csproj;
     }
