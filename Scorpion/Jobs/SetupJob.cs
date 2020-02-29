@@ -106,9 +106,9 @@ namespace Scorpion.Jobs
           var candidateDirs = Directory.GetDirectories(frameworkDir);
           string frameworkVersionDir = "";
           foreach (string candidate in candidateDirs) {
-            Console.WriteLine($"Trying to find version v4.x ({Path.GetDirectoryName(candidate)})");
-            if (Path.GetDirectoryName(candidate).StartsWith("v4.")) {
-              frameworkVersionDir = Path.Join(frameworkDir, candidate);
+            Console.WriteLine($"Trying to find version v4.x ({new DirectoryInfo(candidate).Name})");
+            if (new DirectoryInfo(candidate).Name.StartsWith("v4.")) {
+              frameworkVersionDir = Path.Join(frameworkDir, new DirectoryInfo(candidate).Name);
               break;
             }
           }
