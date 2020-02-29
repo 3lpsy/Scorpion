@@ -88,7 +88,7 @@ namespace Scorpion.Jobs
         var smbBinPath = Path.Join(projDir, "GruntStager.exe");
         Console.WriteLine("Saving Unobfuscated Grunt Binary");
         File.WriteAllBytes(smbBinPath, rawSmbBin);
-        var smbSrcPath = Path.Join(projDir, aGuid = ".cs");
+        var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
         Console.WriteLine("Saving SMB Grunt Stager Code");
         File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
         Console.WriteLine("Loading csproj for prgramatic build");
