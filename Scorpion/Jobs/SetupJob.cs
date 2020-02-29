@@ -150,7 +150,7 @@ namespace Scorpion.Jobs
 
             var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
             Console.WriteLine($"Msbuild Path: {msbuildPath}");
-            var msbuildArgs = $"{csprojName} /p:Configuration=Release /t:restore";
+            var msbuildArgs = $"{csprojName} /p:Configuration=Release";
             Console.WriteLine($"Msbuild Args: {msbuildArgs}");
 
             Process p = new Process();
