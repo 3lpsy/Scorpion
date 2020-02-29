@@ -498,7 +498,7 @@ using System.Runtime.InteropServices;
     <Reference Include=""Microsoft.CSharp"" />
     <Reference Include=""System.Data"" />
     <Reference Include=""System.Xml"" />
-    <PackageReference Include=""Obfuscar"" Version=""2.2.25"">
+    <PackageReference Include=""Obfuscar"">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
