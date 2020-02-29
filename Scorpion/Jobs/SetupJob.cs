@@ -168,6 +168,9 @@ namespace Scorpion.Jobs
             p.WaitForExit();
             Console.WriteLine(output);
 
+            File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
+            File.Move(Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe"), Path.Join(dataDir, aGuid + ".exe"));
+
             Console.WriteLine($"Checking if obfuscar is in path...");
 
 
@@ -417,7 +420,7 @@ Write-Output ""Error"";
       var obfuscarXml = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Obfuscator>
 	<Var name=""InPath"" value=""."" />
-	<Var name=""OutPath"" value=""{1}"" />
+	<Var name=""OutPath"" value=""{1}\obfuscated"" />
 	<Var name=""KeepPublicApi"" value=""false"" />
 	<Var name=""HidePrivateApi"" value=""true"" />
 	<Module file=""{1}"" />
