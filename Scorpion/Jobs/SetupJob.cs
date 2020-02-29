@@ -68,6 +68,10 @@ namespace Scorpion.Jobs
           Directory.CreateDirectory(projDir);
         }
 
+        if (!Directory.Exists(Path.Join(projDir, "Properies"))) {
+          Directory.CreateDirectory(Path.Join(projDir, "Properties"));
+        }
+
         Console.WriteLine($"Generating csproj for {aGuid}");
 
         var csproj = GenerateCsprojFile(aGuid, projDir);
@@ -93,6 +97,11 @@ namespace Scorpion.Jobs
         File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
         Console.WriteLine("Loading csproj for prgramatic build");
 
+        var assemblyInfo = GenerateAssemblyInfo(aGuid);
+        var assemblyInfoName = "AssemblyInfo.cs";
+        var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
+        Console.WriteLine($"Saving Assembly Info for {aGuid}");
+        File.WriteAllBytes(obfuscarPath, Encoding.ASCII.GetBytes(obfuscar));
         // var collection = ProjectCollection.GlobalProjectCollection;
         // var project = collection.LoadProject(csprojPath);
         // project.SetProperty("Configuration", "Release");
@@ -388,6 +397,46 @@ Write-Output ""Error"";
       return obfuscarXml;
     }
 
+    public string GenerateAssemblyInfo(string aGuid)
+    {
+      return String.Format(@"using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+// General Information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+[assembly: AssemblyTitle(""{0}"")]
+[assembly: AssemblyDescription("""")]
+[assembly: AssemblyConfiguration("""")]
+[assembly: AssemblyCompany("""")]
+[assembly: AssemblyProduct(""{0}"")]
+[assembly: AssemblyCopyright(""Copyright ©  2020"")]
+[assembly: AssemblyTrademark("""")]
+[assembly: AssemblyCulture("""")]
+
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
+// COM, set the ComVisible attribute to true on that type.
+[assembly: ComVisible(false)]
+
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+[assembly: Guid(""7569d42d-2249-4715-930f-f632ab0f8c8c"")]
+
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Build and Revision Numbers
+// by using the '*' as shown below:
+// [assembly: AssemblyVersion(""1.0.*"")]
+[assembly: AssemblyVersion(""1.0.0.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]
+", aGuid);
+    }
 
     public string GenerateCsprojFile(string aGuid, string projDir)
     {
@@ -437,7 +486,7 @@ Write-Output ""Error"";
     <Reference Include=""System.Xml"" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=""Program.cs"" />
+    <Compile Include=""{0}.cs"" />
     <Compile Include=""Properties\AssemblyInfo.cs"" />
   </ItemGroup>
   <ItemGroup>
