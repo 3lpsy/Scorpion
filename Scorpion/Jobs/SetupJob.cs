@@ -151,8 +151,10 @@ namespace Scorpion.Jobs
             Console.WriteLine($"Nuget Obfuscar Install Exit Code: {nugetInstallObfuscar.ExitCode}");
 
             var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
-            Console.WriteLine($"Msbuild Path: {msbuildPath}");
             var msbuildArgs = $"{csprojName} /p:Configuration=Release";
+
+            Console.WriteLine($"Building...");
+            Console.WriteLine($"Msbuild Path: {msbuildPath}");
             Console.WriteLine($"Msbuild Args: {msbuildArgs}");
 
             Process p = new Process();
@@ -164,15 +166,20 @@ namespace Scorpion.Jobs
             startInfo.FileName = msbuildPath;
             startInfo.Arguments = msbuildArgs;
             p.StartInfo = startInfo;
-            Console.WriteLine($"Building...");
             p.Start();
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
+
             Console.WriteLine(output);
             Console.WriteLine($"Build Exit Code: {p.ExitCode}");
 
             string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
             string obfuscarArgs = Path.Join(projDir, aGuid + ".xml");
+
+            Console.WriteLine($"Obfuscating...");
+            Console.WriteLine($"Obfuscar Path: {obfuscarBinPath}");
+            Console.WriteLine($"Obfuscar Args: {obfuscarArgs}");
+
             Process obfuscate = new Process();
             ProcessStartInfo obfuscateStartInfo = new ProcessStartInfo();
             // Redirect the output stream of the child process.
@@ -181,24 +188,19 @@ namespace Scorpion.Jobs
             obfuscateStartInfo.WorkingDirectory = projDir;
             obfuscateStartInfo.FileName = obfuscarBinPath;
             obfuscateStartInfo.Arguments = obfuscarArgs;
-            obfuscate.StartInfo = startInfo;
-            Console.WriteLine($"Obfuscating...");
-            Console.WriteLine($"Obfuscar Path: {obfuscarBinPath}");
-            Console.WriteLine($"Obfuscar Args: {obfuscarArgs}");
+            obfuscate.StartInfo = obfuscateStartInfo;
+
             obfuscate.Start();
             string obfuscateOutput = obfuscate.StandardOutput.ReadToEnd();
-
             obfuscate.WaitForExit();
+
             Console.WriteLine(obfuscateOutput);
             Console.WriteLine($"Obfuscate Exit Code: {obfuscate.ExitCode}");
 
             Console.WriteLine($"Moving compiled target to Compiled.exe");
-
             File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
             Console.WriteLine($"Moving obfuscated target out of obfuscated directory");
-
             File.Move(Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe"), Path.Join(dataDir, aGuid + ".exe"));
-
 
           } else {
             Console.WriteLine($"Not able to find directory in {frameworkDir} that starts with 'v4.'. Can't find msbuild.exe");
