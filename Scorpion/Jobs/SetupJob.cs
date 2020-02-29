@@ -101,7 +101,7 @@ namespace Scorpion.Jobs
         var assemblyInfoName = "AssemblyInfo.cs";
         var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
         Console.WriteLine($"Saving Assembly Info for {aGuid}");
-        File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(obfuscar));
+        File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(assemblyInfo));
         // var collection = ProjectCollection.GlobalProjectCollection;
         // var project = collection.LoadProject(csprojPath);
         // project.SetProperty("Configuration", "Release");
@@ -441,8 +441,11 @@ using System.Runtime.InteropServices;
     public string GenerateCsprojFile(string aGuid, string projDir)
     {
       var csproj = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
-<Project DefaultTarget=""Compile"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+<Project DefaultTarget=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
+  <Target Name=""Build"">
+    <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)$(AssemblyName).exe"" />
+  </Target>  
   <PropertyGroup>
     <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
     <Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
