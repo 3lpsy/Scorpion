@@ -108,11 +108,14 @@ namespace Scorpion.Jobs
         // project.Build();
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
           // Registry Code
-          Console.WriteLine("Downloading nuget.exe");
+          if (!File.Exists(Path.Join(dataDir, "nuget.exe"))) {
+            Console.WriteLine("Downloading nuget.exe");
+            var wc = new System.Net.WebClient();
+            var dlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
 
-          var wc = new System.Net.WebClient();
-          var dlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
-          wc.DownloadFile(dlUrl, Path.Join(dataDir, "nuget.exe"));
+            wc.DownloadFile(dlUrl, Path.Join(dataDir, "nuget.exe"));
+          }
+
 
           Console.WriteLine("Building project via msbuild");
 
@@ -128,6 +131,23 @@ namespace Scorpion.Jobs
           }
 
           if (!String.IsNullOrEmpty(frameworkVersionDir)) {
+
+            string obfuscarVersion = "2.2.25";
+            Process nugetInstallObfuscar = new Process();
+            ProcessStartInfo nugetInstallObfuscarInfo = new ProcessStartInfo();
+            // Redirect the output stream of the child process.
+            nugetInstallObfuscarInfo.UseShellExecute = false;
+            nugetInstallObfuscarInfo.RedirectStandardOutput = true;
+            nugetInstallObfuscarInfo.WorkingDirectory = projDir;
+            nugetInstallObfuscarInfo.FileName = Path.Join(dataDir, "nuget.exe");
+            nugetInstallObfuscarInfo.Arguments = $"install obfuscar -o {projDir}\\Obfuscar -Version {obfuscarVersion} -ExcludeVersion";
+            nugetInstallObfuscar.StartInfo = nugetInstallObfuscarInfo;
+            Console.WriteLine($"Building...");
+            nugetInstallObfuscar.Start();
+            string nugetInstallObfuscarOutput = nugetInstallObfuscar.StandardOutput.ReadToEnd();
+            nugetInstallObfuscar.WaitForExit();
+            Console.WriteLine(nugetInstallObfuscarOutput);
+
             var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
             Console.WriteLine($"Msbuild Path: {msbuildPath}");
             var msbuildArgs = $"{csprojName} /p:Configuration=Release /t:restore";
@@ -456,7 +476,7 @@ using System.Runtime.InteropServices;
   </Target>  
   <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>$(Obfuscar) $(OutputPath)\obfuscar.xml</Command>
+      <Command>{1}\Obfuscar\Obfuscar\tools\Obfuscar.Console.exe $(OutputPath)\obfuscar.xml</Command>
       <Message>Obfuscating...</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -503,10 +523,6 @@ using System.Runtime.InteropServices;
     <Reference Include=""Microsoft.CSharp"" />
     <Reference Include=""System.Data"" />
     <Reference Include=""System.Xml"" />
-    <PackageReference Include=""Obfuscar"">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include=""{0}.cs"" />
