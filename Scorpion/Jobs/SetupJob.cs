@@ -148,6 +148,7 @@ namespace Scorpion.Jobs
             nugetInstallObfuscar.WaitForExit();
             Console.WriteLine(nugetInstallObfuscarOutput);
             Console.WriteLine(nugetInstallObfuscar.ExitCode);
+            Console.WriteLine($"Nuget Obfuscar Install Exit Code: {nugetInstallObfuscar.ExitCode}");
 
             var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
             Console.WriteLine($"Msbuild Path: {msbuildPath}");
@@ -168,7 +169,7 @@ namespace Scorpion.Jobs
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
             Console.WriteLine(output);
-            Console.WriteLine(p.ExitCode);
+            Console.WriteLine($"Build Exit Code: {p.ExitCode}");
 
             string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
             string obfuscarArgs = Path.Join(projDir, aGuid + ".xml");
@@ -182,14 +183,14 @@ namespace Scorpion.Jobs
             obfuscateStartInfo.Arguments = obfuscarArgs;
             obfuscate.StartInfo = startInfo;
             Console.WriteLine($"Obfuscating...");
-            Console.WriteLine($"Obfuscar Path: obfuscarBinPath");
+            Console.WriteLine($"Obfuscar Path: {obfuscarBinPath}");
             Console.WriteLine($"Obfuscar Args: {obfuscarArgs}");
             obfuscate.Start();
             string obfuscateOutput = obfuscate.StandardOutput.ReadToEnd();
 
             obfuscate.WaitForExit();
             Console.WriteLine(obfuscateOutput);
-            Console.WriteLine(obfuscate.ExitCode);
+            Console.WriteLine($"Obfuscate Exit Code: {obfuscate.ExitCode}");
 
             Console.WriteLine($"Moving compiled target to Compiled.exe");
 
