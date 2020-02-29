@@ -147,6 +147,7 @@ namespace Scorpion.Jobs
             string nugetInstallObfuscarOutput = nugetInstallObfuscar.StandardOutput.ReadToEnd();
             nugetInstallObfuscar.WaitForExit();
             Console.WriteLine(nugetInstallObfuscarOutput);
+            Console.WriteLine(nugetInstallObfuscar.ExitCode);
 
             var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
             Console.WriteLine($"Msbuild Path: {msbuildPath}");
@@ -167,8 +168,10 @@ namespace Scorpion.Jobs
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
             Console.WriteLine(output);
+            Console.WriteLine(p.ExitCode);
 
             string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
+            string obfuscarArgs = Path.Join(projDir, aGuid + ".xml");
             Process obfuscate = new Process();
             ProcessStartInfo obfuscateStartInfo = new ProcessStartInfo();
             // Redirect the output stream of the child process.
@@ -176,16 +179,17 @@ namespace Scorpion.Jobs
             obfuscateStartInfo.RedirectStandardOutput = true;
             obfuscateStartInfo.WorkingDirectory = projDir;
             obfuscateStartInfo.FileName = obfuscarBinPath;
-            obfuscateStartInfo.Arguments = Path.Join(projDir, aGuid + ".xml");
+            obfuscateStartInfo.Arguments = obfuscarArgs;
             obfuscate.StartInfo = startInfo;
             Console.WriteLine($"Obfuscating...");
+            Console.WriteLine($"Obfuscar Path: obfuscarBinPath");
+            Console.WriteLine($"Obfuscar Args: {obfuscarArgs}");
             obfuscate.Start();
             string obfuscateOutput = obfuscate.StandardOutput.ReadToEnd();
-            string obfuscateError = obfuscate.StandardError.ReadToEnd();
 
             obfuscate.WaitForExit();
             Console.WriteLine(obfuscateOutput);
-            Console.WriteLine(obfuscateError);
+            Console.WriteLine(obfuscate.ExitCode);
 
             Console.WriteLine($"Moving compiled target to Compiled.exe");
 
