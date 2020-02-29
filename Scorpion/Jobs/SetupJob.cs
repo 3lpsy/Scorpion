@@ -184,13 +184,12 @@ namespace Scorpion.Jobs
             obfuscate.WaitForExit();
             Console.WriteLine(obfuscateOutput);
 
+            Console.WriteLine($"Moving compiled target to Compiled.exe");
 
             File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
+            Console.WriteLine($"Moving obfuscated target out of obfuscated directory");
+
             File.Move(Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe"), Path.Join(dataDir, aGuid + ".exe"));
-
-            Console.WriteLine($"Checking if obfuscar is in path...");
-
-      < Command >{ 1}\Obfuscar\Obfuscar\tools\Obfuscar.Console.exe $(OutputPath)\obfuscar.xml </ Command >
 
 
           } else {
