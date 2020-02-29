@@ -17,6 +17,7 @@ namespace Scorpion.Commands
       typeof(ListListenersCommand),
       typeof(AddListenerCommand),
       typeof(ListImplantTemplatesCommand),
+      typeof(ListProfilesCommand),
 
       typeof(RemoveListenerCommand),
       typeof(SetupCommand)

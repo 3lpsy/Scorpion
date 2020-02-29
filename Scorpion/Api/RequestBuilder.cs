@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using Covenant.API;
 using Covenant.API.Models;
@@ -109,6 +110,33 @@ namespace Scorpion.Api
       return result.Body;
     }
 
+    public async Task<Listener> GetListenerByName(string name)
+    {
+      var listeners = await GetListeners();
+
+      foreach (Listener listener in listeners) {
+        if (listener.Name.ToLower() == name.ToLower()) {
+          return listener;
+        }
+      }
+      throw new AppException($"Received API Error: No Listener found for name.");
+    }
+
+    public async Task<HttpListener> GetHttpListenerById(int id)
+    {
+      try {
+        return await MakeGetHttpListenerById(id);
+      } catch (HttpOperationException ex) {
+        throw new AppException($"Received API Error: {ex.Message}");
+      }
+    }
+
+    public async Task<HttpListener> MakeGetHttpListenerById(int id)
+    {
+      var result = await Api.ApiListenersHttpByIdGetWithHttpMessagesAsync(id);
+      return result.Body;
+    }
+
     public async Task<IList<ListenerType>> GetListenerTypes()
     {
       try {
@@ -129,6 +157,7 @@ namespace Scorpion.Api
       var listenerTypes = await GetListenerTypes();
 
       foreach (ListenerType listenerType in listenerTypes) {
+
         if (listenerType.Name.ToLower() == listenerTypeName.ToLower()) {
           return listenerType;
         }
@@ -221,6 +250,22 @@ namespace Scorpion.Api
       await Api.ApiListenersByIdDeleteAsync(listenerId);
       return true;
     }
+    public async Task<BinaryLauncher> InitBinaryLauncher()
+    {
+      try {
+        return await MakeInitBinaryLauncher();
+      } catch (HttpOperationException ex) {
+        throw new AppException($"Received API Error: {ex.Message}");
+      }
+    }
+
+
+    public async Task<BinaryLauncher> MakeInitBinaryLauncher()
+    {
+      var result = await Api.ApiLaunchersBinaryPostWithHttpMessagesAsync();
+      return result.Body;
+    }
+
     public async Task<BinaryLauncher> CreateBinaryLauncher(BinaryLauncher launcher)
     {
       try {
@@ -235,7 +280,6 @@ namespace Scorpion.Api
     {
       var result = await Api.ApiLaunchersBinaryPutWithHttpMessagesAsync(launcher);
       return result.Body;
-
     }
 
     public async Task<HostedFile> CreateHostedFile(int listenerId, HostedFile hostedFile)
@@ -253,7 +297,20 @@ namespace Scorpion.Api
       var result = await Api.ApiListenersByIdHostedfilesPostWithHttpMessagesAsync(listenerId, hostedFile);
       return result.Body;
     }
+    public async Task<IList<HostedFile>> GetHostedFiles(int listenerId)
+    {
+      try {
+        return await MakeGetHostedFiles(listenerId);
+      } catch (HttpOperationException ex) {
+        throw new AppException($"Received API Error: {ex.Message}");
+      }
+    }
 
+    public async Task<IList<HostedFile>> MakeGetHostedFiles(int listenerId)
+    {
+      var result = await Api.ApiListenersByIdHostedfilesGetWithHttpMessagesAsync(listenerId);
+      return result.Body;
+    }
 
   }
 }
