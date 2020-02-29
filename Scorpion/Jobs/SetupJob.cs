@@ -490,19 +490,14 @@ using System.Runtime.InteropServices;
     <Reference Include=""Microsoft.CSharp"" />
     <Reference Include=""System.Data"" />
     <Reference Include=""System.Xml"" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include=""{0}.cs"" />
-    <Compile Include=""Properties\AssemblyInfo.cs"" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include=""packages.config"" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include=""Obfuscar"" Version=""2.2.25"">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=""{0}.cs"" />
+    <Compile Include=""Properties\AssemblyInfo.cs"" />
   </ItemGroup>
   <Target Name=""EnsureNuGetPackageBuildImports"" BeforeTargets=""PrepareForBuild"">
     <PropertyGroup>
