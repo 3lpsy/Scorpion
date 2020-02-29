@@ -16,7 +16,6 @@ using System.Runtime.InteropServices;
 
 using Covenant.API;
 using Covenant.API.Models;
-using System.Net;
 using System.Net.Http;
 using Scorpion.Exceptions;
 using Scorpion.Jobs;
@@ -111,7 +110,7 @@ namespace Scorpion.Jobs
           // Registry Code
           Console.WriteLine("Downloading nuget.exe");
 
-          var wc = new WebClient();
+          var wc = new System.Net.WebClient();
           var dlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
           wc.DownloadFile(dlUrl, Path.Join(dataDir, "nuget.exe"));
 
