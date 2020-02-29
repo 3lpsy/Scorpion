@@ -89,7 +89,7 @@ namespace Scorpion.Jobs
 
         BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
         var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
-        var smbBinPath = Path.Join(projDir, "Original.exe");
+        var smbBinPath = Path.Join(projDir, "Downloaded.exe");
         Console.WriteLine("Saving Unobfuscated Grunt Binary");
         File.WriteAllBytes(smbBinPath, rawSmbBin);
         var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
@@ -125,7 +125,7 @@ namespace Scorpion.Jobs
           if (!String.IsNullOrEmpty(frameworkVersionDir)) {
             var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
             Console.WriteLine($"Msbuild Path: {msbuildPath}");
-            var msbuildArgs = $"{csprojName} /p:Configuration=Release";
+            var msbuildArgs = $"{csprojName} /p:Configuration=Release /t:restore";
             Console.WriteLine($"Msbuild Args: {msbuildArgs}");
 
             Process p = new Process();
@@ -142,6 +142,9 @@ namespace Scorpion.Jobs
             string output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
             Console.WriteLine(output);
+
+            Console.WriteLine($"Checking if obfuscar is in path...");
+
 
           } else {
             Console.WriteLine($"Not able to find directory in {frameworkDir} that starts with 'v4.'. Can't find msbuild.exe");
@@ -444,7 +447,7 @@ using System.Runtime.InteropServices;
 <Project DefaultTarget=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
   <Target Name=""Build"">
-    <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)$(AssemblyName).exe"" />
+    <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)\Compiled.exe"" />
   </Target>  
   <PropertyGroup>
     <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
@@ -494,6 +497,12 @@ using System.Runtime.InteropServices;
   </ItemGroup>
   <ItemGroup>
     <None Include=""packages.config"" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include=""Obfuscar"" Version=""2.2.25"">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <Target Name=""EnsureNuGetPackageBuildImports"" BeforeTargets=""PrepareForBuild"">
     <PropertyGroup>
