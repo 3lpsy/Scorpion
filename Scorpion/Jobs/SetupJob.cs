@@ -101,7 +101,7 @@ namespace Scorpion.Jobs
         var assemblyInfoName = "AssemblyInfo.cs";
         var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
         Console.WriteLine($"Saving Assembly Info for {aGuid}");
-        File.WriteAllBytes(obfuscarPath, Encoding.ASCII.GetBytes(obfuscar));
+        File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(obfuscar));
         // var collection = ProjectCollection.GlobalProjectCollection;
         // var project = collection.LoadProject(csprojPath);
         // project.SetProperty("Configuration", "Release");
@@ -489,14 +489,6 @@ using System.Runtime.InteropServices;
     <Compile Include=""{0}.cs"" />
     <Compile Include=""Properties\AssemblyInfo.cs"" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include=""packages.config"" />
-  </ItemGroup>
-  <Target Name=""EnsureNuGetPackageBuildImports"" BeforeTargets=""PrepareForBuild"">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {{{{0}}.</ErrorText>
-    </PropertyGroup>
-  </Target>
 </Project>", aGuid, projDir);
       return csproj;
     }
