@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 
 using Covenant.API;
 using Covenant.API.Models;
+using System.Net;
 using System.Net.Http;
 using Scorpion.Exceptions;
 using Scorpion.Jobs;
@@ -108,6 +109,11 @@ namespace Scorpion.Jobs
         // project.Build();
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
           // Registry Code
+          Console.WriteLine("Downloading nuget.exe");
+
+          var wc = new WebClient();
+          var dlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
+          wc.DownloadFile(dlUrl, Path.Join(dataDir, "nuget.exe"));
 
           Console.WriteLine("Building project via msbuild");
 
