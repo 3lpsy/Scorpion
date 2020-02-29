@@ -400,7 +400,7 @@ Write-Output ""Error"";
     <ProjectGuid>{{70FD0877-6515-4D14-B830-AA470E7C1AFD}}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>GruntStager</RootNamespace>
-    <AssemblyName>GruntStager</AssemblyName>
+    <AssemblyName>{0}</AssemblyName>
     <TargetName>{0}</TargetName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
