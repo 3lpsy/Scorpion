@@ -181,8 +181,11 @@ namespace Scorpion.Jobs
             Console.WriteLine($"Obfuscating...");
             obfuscate.Start();
             string obfuscateOutput = obfuscate.StandardOutput.ReadToEnd();
+            string obfuscateError = obfuscate.StandardError.ReadToEnd();
+
             obfuscate.WaitForExit();
             Console.WriteLine(obfuscateOutput);
+            Console.WriteLine(obfuscateError);
 
             Console.WriteLine($"Moving compiled target to Compiled.exe");
 
