@@ -447,8 +447,14 @@ using System.Runtime.InteropServices;
 <Project DefaultTarget=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
   <Target Name=""Build"">
-    <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)\Compiled.exe"" />
+    <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)\{0}.exe"" />
   </Target>  
+  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>$(Obfuscar) $(OutputPath)\obfuscar.xml</Command>
+      <Message>Obfuscating...</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <PropertyGroup>
     <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
     <Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
@@ -472,6 +478,7 @@ using System.Runtime.InteropServices;
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+      <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "">
     <PlatformTarget>x64</PlatformTarget>
@@ -481,6 +488,7 @@ using System.Runtime.InteropServices;
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+      <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include=""System"" />
