@@ -168,10 +168,29 @@ namespace Scorpion.Jobs
             p.WaitForExit();
             Console.WriteLine(output);
 
+            string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
+            Process obfuscate = new Process();
+            ProcessStartInfo obfuscateStartInfo = new ProcessStartInfo();
+            // Redirect the output stream of the child process.
+            obfuscateStartInfo.UseShellExecute = false;
+            obfuscateStartInfo.RedirectStandardOutput = true;
+            obfuscateStartInfo.WorkingDirectory = projDir;
+            obfuscateStartInfo.FileName = obfuscarBinPath;
+            obfuscateStartInfo.Arguments = Path.Join(projDir, aGuid + ".xml");
+            obfuscate.StartInfo = startInfo;
+            Console.WriteLine($"Obfuscating...");
+            obfuscate.Start();
+            string obfuscateOutput = p.StandardOutput.ReadToEnd();
+            obfuscate.WaitForExit();
+            Console.WriteLine(obfuscateOutput);
+
+
             File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
             File.Move(Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe"), Path.Join(dataDir, aGuid + ".exe"));
 
             Console.WriteLine($"Checking if obfuscar is in path...");
+
+      < Command >{ 1}\Obfuscar\Obfuscar\tools\Obfuscar.Console.exe $(OutputPath)\obfuscar.xml </ Command >
 
 
           } else {
@@ -477,12 +496,6 @@ using System.Runtime.InteropServices;
   <Target Name=""Build"">
     <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)\{0}.exe"" />
   </Target>  
-  <ItemDefinitionGroup>
-    <PostBuildEvent>
-      <Command>{1}\Obfuscar\Obfuscar\tools\Obfuscar.Console.exe $(OutputPath)\obfuscar.xml</Command>
-      <Message>Obfuscating...</Message>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
   <PropertyGroup>
     <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
     <Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
@@ -506,7 +519,6 @@ using System.Runtime.InteropServices;
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-      <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "">
     <PlatformTarget>x64</PlatformTarget>
