@@ -420,7 +420,7 @@ Write-Output ""Error"";
       var obfuscarXml = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Obfuscator>
 	<Var name=""InPath"" value=""."" />
-	<Var name=""OutPath"" value=""{1}\obfuscated"" />
+	<Var name=""OutPath"" value=""{0}\obfuscated"" />
 	<Var name=""KeepPublicApi"" value=""false"" />
 	<Var name=""HidePrivateApi"" value=""true"" />
 	<Module file=""{1}"" />
