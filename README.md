@@ -28,7 +28,7 @@ You can also customize the listener first via the "addlistener" command and the 
 
 ## History
 
-This was initially an attempt to generate a CLI interface for a Covenant C2 server. However, the project was abandoned until I actually found a need for it. The currnt main goal of this project is to facilitate the generation of a listener and multiple obfuscated SMB grunts automatically. This project is not meant to be used on actual engagements and is instead targeted at lab envrionments. This project is also likely to be unmaintained once it has served the purpose it was designed to fufill which was to help automate Grunt generation for Red Team Ops.
+This was initially an attempt to generate a CLI interface for a Covenant C2 server. However, the project was abandoned until I actually found a need for it. The current main goal of this project is to facilitate the generation of a listener and multiple obfuscated SMB grunts automatically. This project is not meant to be used on actual engagements and is instead targeted at lab envrionments. This project is also likely to be unmaintained once it has served the purpose it was designed to fufill which was to help automate Grunt generation for Red Team Ops.
 
 ## Supported Environment Variables:
 
