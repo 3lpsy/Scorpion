@@ -180,7 +180,7 @@ namespace Scorpion.Jobs
             obfuscate.StartInfo = startInfo;
             Console.WriteLine($"Obfuscating...");
             obfuscate.Start();
-            string obfuscateOutput = p.StandardOutput.ReadToEnd();
+            string obfuscateOutput = obfuscate.StandardOutput.ReadToEnd();
             obfuscate.WaitForExit();
             Console.WriteLine(obfuscateOutput);
 
