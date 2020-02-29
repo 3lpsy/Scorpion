@@ -377,8 +377,7 @@ Write-Output ""Error"";
 
     public string GenerateObfuscarFile(string aGuid, string projDir)
     {
-      var obfuscarXml = String.Format(@"
-<?xml version=""1.0"" encoding=""utf-8""?>
+      var obfuscarXml = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Obfuscator>
 	<Var name=""InPath"" value=""."" />
 	<Var name=""OutPath"" value=""{1}"" />
@@ -392,8 +391,7 @@ Write-Output ""Error"";
 
     public string GenerateCsprojFile(string aGuid, string projDir)
     {
-      var csproj = String.Format(@"
-<?xml version=""1.0"" encoding=""utf-8""?>
+      var csproj = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project ToolsVersion=""15.0"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
   <PropertyGroup>
