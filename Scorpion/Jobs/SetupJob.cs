@@ -63,6 +63,7 @@ namespace Scorpion.Jobs
 
       for (int i = 0; i < 5; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
+
         var projDir = Path.Join(dataDir, aGuid);
         if (!Directory.Exists(projDir)) {
           Directory.CreateDirectory(projDir);
@@ -102,29 +103,27 @@ namespace Scorpion.Jobs
         var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
         Console.WriteLine($"Saving Assembly Info for {aGuid}");
         File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(assemblyInfo));
-        // var collection = ProjectCollection.GlobalProjectCollection;
-        // var project = collection.LoadProject(csprojPath);
-        // project.SetProperty("Configuration", "Release");
-        // project.Build();
+
         if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-          // Registry Code
-          if (!File.Exists(Path.Join(dataDir, "nuget.exe"))) {
+
+          var nugetExePath = Path.Join(dataDir, "nuget.exe");
+          if (!File.Exists(nugetExePath)) {
             Console.WriteLine("Downloading nuget.exe");
             var wc = new System.Net.WebClient();
             var dlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
 
-            wc.DownloadFile(dlUrl, Path.Join(dataDir, "nuget.exe"));
+            wc.DownloadFile(dlUrl, nugetExePath);
           }
 
 
-          Console.WriteLine("Building project via msbuild");
-
           var frameworkDir = "C:\\Windows\\Microsoft.Net\\Framework";
+          Console.WriteLine($"Finding v4.x msbuild.exe by walking {frameworkDir}");
+
           var candidateDirs = Directory.GetDirectories(frameworkDir);
           string frameworkVersionDir = "";
           foreach (string candidate in candidateDirs) {
-            Console.WriteLine($"Trying to find version v4.x ({new DirectoryInfo(candidate).Name})");
             if (new DirectoryInfo(candidate).Name.StartsWith("v4.")) {
+              Console.WriteLine($"Found msbuild.exe at {candidate}");
               frameworkVersionDir = Path.Join(frameworkDir, new DirectoryInfo(candidate).Name);
               break;
             }
@@ -157,21 +156,22 @@ namespace Scorpion.Jobs
             Console.WriteLine($"Msbuild Path: {msbuildPath}");
             Console.WriteLine($"Msbuild Args: {msbuildArgs}");
 
-            Process p = new Process();
-            ProcessStartInfo startInfo = new ProcessStartInfo();
+            Process build = new Process();
+            ProcessStartInfo buildStartInfo = new ProcessStartInfo();
             // Redirect the output stream of the child process.
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.WorkingDirectory = projDir;
-            startInfo.FileName = msbuildPath;
-            startInfo.Arguments = msbuildArgs;
-            p.StartInfo = startInfo;
-            p.Start();
-            string output = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
+            buildStartInfo.UseShellExecute = false;
+            buildStartInfo.RedirectStandardOutput = true;
+            buildStartInfo.WorkingDirectory = projDir;
+            buildStartInfo.FileName = msbuildPath;
+            buildStartInfo.Arguments = msbuildArgs;
+
+            build.StartInfo = buildStartInfo;
+            build.Start();
+            string output = build.StandardOutput.ReadToEnd();
+            build.WaitForExit();
 
             Console.WriteLine(output);
-            Console.WriteLine($"Build Exit Code: {p.ExitCode}");
+            Console.WriteLine($"Build Exit Code: {build.ExitCode}");
 
             string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
             string obfuscarArgs = Path.Join(projDir, aGuid + ".xml");
@@ -197,10 +197,20 @@ namespace Scorpion.Jobs
             Console.WriteLine(obfuscateOutput);
             Console.WriteLine($"Obfuscate Exit Code: {obfuscate.ExitCode}");
 
-            Console.WriteLine($"Moving compiled target to Compiled.exe");
+            Console.WriteLine($"Moving msbuild compiled target to Compiled.exe");
             File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
-            Console.WriteLine($"Moving obfuscated target out of obfuscated directory");
-            File.Move(Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe"), Path.Join(dataDir, aGuid + ".exe"));
+
+            Console.WriteLine($"Moving obfuscated target out of obfuscated directory to Data directory");
+            var obfuscatedSmbBinPath = Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe");
+            var newSmbBinPath = Path.Join(dataDir, aGuid + ".exe");
+            File.Move(obfuscatedSmbBinPath, newSmbBinPath);
+
+
+            var hostedSmbBin = new HostedFile();
+            hostedSmbBin.ListenerId = listener.Id;
+            hostedSmbBin.Path = "/" + aGuid + ".exe";
+            hostedSmbBin.Content = Convert.ToBase64String(File.ReadAllBytes(newSmbBinPath));
+            hostedSmbBin = await request.CreateHostedFile((int)listener.Id, hostedSmbBin);
 
           } else {
             Console.WriteLine($"Not able to find directory in {frameworkDir} that starts with 'v4.'. Can't find msbuild.exe");
