@@ -774,7 +774,7 @@ namespace {2}
 {{
     public partial class {3} : ServiceBase
     {{
-        public string TargetAssemblyName = ""{3}.{4}"";
+        public string TargetAssemblyName = ""{2}.{3}"";
         public string TargetMethodName = ""Execute"";
 
         public {3}()
@@ -850,7 +850,7 @@ namespace {2}
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {{
-                new {3}();
+                new {3}()
             }};
             ServiceBase.Run(ServicesToRun);
         }}
