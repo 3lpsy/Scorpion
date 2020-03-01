@@ -673,7 +673,7 @@ using System.Runtime.InteropServices;
           count = count + 1;
           using (Stream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) {
             Console.WriteLine($"File is available: {file}");
-            Thread.Sleep(100);
+            Thread.Sleep(500);
             return 0;
           }
         } catch (Exception ex) {
