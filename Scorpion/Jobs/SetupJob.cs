@@ -872,7 +872,7 @@ namespace {2}
   <PropertyGroup>
     <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
     <Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
-    <ProjectGuid>{93148C2A-579A-4F48-AB25-16AD4B39D841}</ProjectGuid>
+    <ProjectGuid>{{93148C2A-579A-4F48-AB25-16AD4B39D841}}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>{2}</RootNamespace>
     <AssemblyName>{0}</AssemblyName>
