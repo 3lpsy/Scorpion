@@ -23,6 +23,9 @@ namespace Scorpion.Commands.Meta
     [Option("--listener", Description = "Existing Listener Name to use (alternative use --connect-address/port to filter)")]
     public string ListenerName { get; set; }
 
+    [Option("--count", Description = "Number of SMB Grunts to create")]
+    public int SmbGruntCount { get; set; } = 10;
+
     public async Task<int> OnExecuteAsync(IConsole console)
     {
       await SetupCommandAsync(console, true, true);
@@ -33,7 +36,7 @@ namespace Scorpion.Commands.Meta
       if (String.IsNullOrEmpty(ListenerName)) {
         if (String.IsNullOrEmpty(ConnectAddress)) throw new MissingParameterException(nameof(ConnectAddress));
       }
-      return await new SetupJob(console, Api).RunAsync(ListenerName, ConnectAddress, ConnectPort);
+      return await new SetupJob(console, Api).RunAsync(ListenerName, ConnectAddress, ConnectPort, SmbGruntCount);
     }
   }
 }

