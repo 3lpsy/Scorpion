@@ -372,7 +372,7 @@ namespace Scorpion.Jobs
     {
       var request = new RequestBuilder(Api);
       var template = await request.GetImplantTemplateByName(TargetDefaultSmbTemplate);
-      var kd = new DateTime();
+      var kd = DateTime.Now;
       kd.AddDays(60);
 
       var bin = new BinaryLauncher();
