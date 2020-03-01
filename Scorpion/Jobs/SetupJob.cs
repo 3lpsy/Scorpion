@@ -66,8 +66,8 @@ namespace Scorpion.Jobs
       var nugetExePath = DownloadNugetExe(dataDir);
       var donutExePath = DownloadDonutExe(dataDir);
       if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
-        var shellcodePath = RunDonutForGrunt("default", dataDir, donutExePath);
-        var shellcodeUrl = "/default.bin";
+        var shellcodePath = RunDonutForGrunt("app", dataDir, donutExePath);
+        var shellcodeUrl = "/app.bin";
         Console.WriteLine($"Hosting default http binary shellcode (donut) at path {shellcodeUrl}");
         var hostedShellcode = new HostedFile();
         hostedShellcode.ListenerId = listener.Id;
