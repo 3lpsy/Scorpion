@@ -84,6 +84,9 @@ namespace Scorpion.Jobs
 
         BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
         var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
+        if (!Directory.Exists(Path.Join(dataDir, aGuid))) {
+          Directory.CreateDirectory(Path.Join(dataDir, aGuid));
+        }
         var smbBinPath = Path.Join(Path.Join(dataDir, aGuid), "Downloaded.exe");
         Console.WriteLine("Saving Unobfuscated Grunt Binary");
         File.WriteAllBytes(smbBinPath, rawSmbBin);
@@ -100,10 +103,6 @@ namespace Scorpion.Jobs
     {
       var request = new RequestBuilder(Api);
       var projDir = Path.Join(dataDir, aGuid);
-
-      if (!Directory.Exists(projDir)) {
-        Directory.CreateDirectory(projDir);
-      }
       if (!Directory.Exists(Path.Join(projDir, "Properies"))) {
         Directory.CreateDirectory(Path.Join(projDir, "Properties"));
       }
