@@ -168,8 +168,6 @@ namespace Scorpion.Jobs
       Console.WriteLine($"Donut Path: {donutExePath}");
       Console.WriteLine($"Donut Args: {args}");
 
-      WaitForAvailable(source);
-
       Process donut = new Process();
       ProcessStartInfo startInfo = new ProcessStartInfo();
       // Redirect the output stream of the child process.
@@ -221,6 +219,9 @@ namespace Scorpion.Jobs
       var obfuscatedSmbBinPath = Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe");
       var newSmbBinPath = Path.Join(dataDir, aGuid + ".exe");
       File.Move(obfuscatedSmbBinPath, newSmbBinPath);
+
+      WaitForAvailable(newSmbBinPath);
+
       return newSmbBinPath;
     }
     public void RunMsbuildForGrunt(string aGuid, string projDir, string msbuildPath, string csprojName)
