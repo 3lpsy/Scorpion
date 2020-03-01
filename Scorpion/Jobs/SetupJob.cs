@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
 
-
+using System.Threading;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 // using Microsoft.Build;
@@ -145,6 +145,7 @@ namespace Scorpion.Jobs
           hostedShellcode.Path = shellcodeUrl;
           hostedShellcode.Content = Convert.ToBase64String(File.ReadAllBytes(shellcodePath));
           hostedShellcode = await request.CreateHostedFile((int)listener.Id, hostedShellcode);
+
           Console.WriteLine($"Grunt generation complete for {aGuid}");
 
         } else {
@@ -166,6 +167,8 @@ namespace Scorpion.Jobs
       Console.WriteLine($"Generating shellcode...");
       Console.WriteLine($"Donut Path: {donutExePath}");
       Console.WriteLine($"Donut Args: {args}");
+
+      WaitForAvailable(source);
 
       Process donut = new Process();
       ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -660,6 +663,29 @@ using System.Runtime.InteropServices;
   </Target>
 </Project>", aGuid, projDir);
       return csproj;
+    }
+    public void WaitForAvailable(string file, int limit = 10)
+    {
+      var rLimit = limit * 2;
+      var count = 0;
+      while (true) {
+        try {
+          count = count + 1;
+          using (Stream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) {
+            Console.WriteLine($"File is available: {file}");
+          }
+        } catch (Exception ex) {
+          Console.WriteLine($"File is not available. Waiting");
+
+          if (count > rLimit) {
+            Console.WriteLine($"File is not available. Limit reached");
+
+            throw ex;
+          }
+          Thread.Sleep(500);
+
+        }
+      }
     }
   }
 }
