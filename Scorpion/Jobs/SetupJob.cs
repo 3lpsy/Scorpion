@@ -165,7 +165,7 @@ namespace Scorpion.Jobs
       var source = Path.Join(dataDir, aGuid + ".exe");
       var gruntShellcodePath = Path.Join(dataDir, aGuid + ".bin");
       // x64, continue on fail, binary,exit with thread
-      var args = $"-h";
+      var args = $"-a 2 -b 3 -f 1 -x 1 -o {gruntShellcodePath} {source}";
       Console.WriteLine($"Generating shellcode...");
       Console.WriteLine($"Donut Path: {donutExePath}");
       Console.WriteLine($"Donut Args: {args}");
@@ -490,7 +490,7 @@ namespace Scorpion.Jobs
         System.IO.Compression.ZipFile.ExtractToDirectory(donutZipPath, donutExtractPath);
         File.Move(Path.Join(donutExtractPath, "donut.exe"), donutExePath);
       }
-      return donutExtractPath;
+      return donutExePath;
     }
 
     public string FindMsBuildExePath()
