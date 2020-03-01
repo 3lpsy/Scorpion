@@ -201,7 +201,7 @@ namespace Scorpion.Jobs
       var programCs = GenerateServiceProgramCsFile(svcGuid, projDir);
       var programCsName = "Program.cs";
       var programCsPath = Path.Join(projDir, programCsName);
-      File.WriteAllBytes(programCsPath, Encoding.ASCII.GetBytes(csproj));
+      File.WriteAllBytes(programCsPath, Encoding.ASCII.GetBytes(programCs));
 
       Console.WriteLine($"Generating service runner {svcGuid}.cs for {svcGuid}");
       var payload = Convert.ToBase64String(File.ReadAllBytes(obfuscatedBinPath));
