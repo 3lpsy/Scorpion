@@ -676,7 +676,7 @@ using System.Runtime.InteropServices;
             Console.WriteLine($"File is available: {file}");
             Thread.Sleep(500);
           }
-          Thread.Sleep(500);
+          Thread.Sleep(2000);
           return 0;
 
         } catch (Exception ex) {
