@@ -410,8 +410,8 @@ namespace Scorpion.Jobs
       var listenerType = await request.GetListenerTypeByName(listenerTypeName);
 
       connectAddresses.Add(connectAddress);
-      var urls = new List<string>();
-      urls.Add($"http://{connectAddress}:{connectPort}");
+      // var urls = new List<string>();
+      // urls.Add($"http://{connectAddress}:{connectPort}");
 
       HttpListener httpListener = new HttpListener();
       httpListener.Name = "default";
@@ -419,7 +419,7 @@ namespace Scorpion.Jobs
       httpListener.Guid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
       httpListener.BindAddress = "0.0.0.0";
       httpListener.BindPort = connectPort;
-      httpListener.Urls = urls;
+      httpListener.Urls = new List<string>();
       httpListener.ConnectAddresses = connectAddresses;
       httpListener.ConnectPort = connectPort;
       httpListener.ProfileId = (int)profile.Id;
