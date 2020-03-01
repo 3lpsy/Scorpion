@@ -664,7 +664,7 @@ using System.Runtime.InteropServices;
 </Project>", aGuid, projDir);
       return csproj;
     }
-    public void WaitForAvailable(string file, int limit = 10)
+    public int WaitForAvailable(string file, int limit = 10)
     {
       var rLimit = limit * 2;
       var count = 0;
@@ -674,7 +674,7 @@ using System.Runtime.InteropServices;
           using (Stream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) {
             Console.WriteLine($"File is available: {file}");
             Thread.Sleep(100);
-
+            return 0;
           }
         } catch (Exception ex) {
           Console.WriteLine($"File is not available. Waiting");
