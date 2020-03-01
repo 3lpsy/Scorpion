@@ -784,8 +784,8 @@ namespace {2}
 
         protected override void OnStart(string[] args)
         {{
-            byte[]  data = System.Convert.FromBase64String(""{4}"");
-            Assembly a = Assembly.Load(myapp);
+            byte[] data = System.Convert.FromBase64String(""{4}"");
+            Assembly a = Assembly.Load(data);
             Type myType = a.GetType(TargetAssemblyName);
             MethodInfo myMethod = myType.GetMethod(TargetMethodName);
             object obj = Activator.CreateInstance(myType);
