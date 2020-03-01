@@ -165,7 +165,7 @@ namespace Scorpion.Jobs
       var source = Path.Join(dataDir, aGuid + ".exe");
       var gruntShellcodePath = Path.Join(dataDir, aGuid + ".bin");
       // x64, continue on fail, binary,exit with thread
-      var args = $"-a 2 -b 3 -f 1 -x 1 -o {gruntShellcodePath} {source}";
+      var args = $"-h";
       Console.WriteLine($"Generating shellcode...");
       Console.WriteLine($"Donut Path: {donutExePath}");
       Console.WriteLine($"Donut Args: {args}");
