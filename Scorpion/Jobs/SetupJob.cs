@@ -137,6 +137,8 @@ namespace Scorpion.Jobs
           hostedBin = await request.CreateHostedFile((int)listener.Id, hostedBin);
           Console.WriteLine($"Grunt generation complete for {aGuid}");
 
+          WaitForAvailable(Path.Join(dataDir, aGuid + ".exe"));
+
           var shellcodePath = RunDonutForGrunt(aGuid, projDir, dataDir, donutExePath);
           var shellcodeUrl = "/" + aGuid + ".bin";
           Console.WriteLine($"Hosting obfuscated shellcode (donut) smb binary at path {shellcodeUrl}");
@@ -219,8 +221,6 @@ namespace Scorpion.Jobs
       var obfuscatedSmbBinPath = Path.Join(Path.Join(projDir, "obfuscated"), aGuid + ".exe");
       var newSmbBinPath = Path.Join(dataDir, aGuid + ".exe");
       File.Move(obfuscatedSmbBinPath, newSmbBinPath);
-
-      WaitForAvailable(newSmbBinPath);
 
       return newSmbBinPath;
     }
@@ -675,8 +675,10 @@ using System.Runtime.InteropServices;
           using (Stream stream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) {
             Console.WriteLine($"File is available: {file}");
             Thread.Sleep(500);
-            return 0;
           }
+          Thread.Sleep(500);
+          return 0;
+
         } catch (Exception ex) {
           Console.WriteLine($"File is not available. Waiting");
 
