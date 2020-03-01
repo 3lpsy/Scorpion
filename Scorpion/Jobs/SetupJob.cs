@@ -863,7 +863,6 @@ namespace {2}
     public string GenerateServiceBinaryCsprojFile(string aGuid, string projDir)
     {
       var csproj = String.Format(@"<?xml version=""1.0"" encoding=""utf-8""?>
-<?xml version=""1.0"" encoding=""utf-8""?>
 <Project DefaultTarget=""Build"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
   <Import Project=""$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"" Condition=""Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"" />
   <Target Name=""Build"">
