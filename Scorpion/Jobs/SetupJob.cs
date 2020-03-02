@@ -801,16 +801,16 @@ namespace {2}
             var meths = myType.GetMethods();
 
             foreach( MethodInfo m in meths)
-            {
+            {{
                 var attribCount = m.GetCustomAttributes(true).Count();
                 if (m.Name == TargetMethodName && m.IsStatic && m.IsPublic && attribCount == 0)
-                {
+                {{
                     Console.WriteLine(""Starting"");
                     object obj = Activator.CreateInstance(myType);
                     m.Invoke(obj, null);
                     break;
-                }
-            }
+                }}
+            }}
             Console.WriteLine(""Done"");
         }}
 
