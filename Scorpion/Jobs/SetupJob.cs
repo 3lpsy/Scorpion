@@ -767,7 +767,7 @@ using System.Runtime.InteropServices;
 
     public string GenerateServiceRunnerCsFile(string aGuid, string projDir, string bin64)
     {
-      // whacky program that tries to find reflectively load obfuscated exe and find Execute() ("A.A.A")
+      // whacky program that tries to find reflectively load obfuscated exe and find Execute() ("A.A.A()")
       // Have to deal with ambigous method names.
       var content = String.Format(@"
 using System;

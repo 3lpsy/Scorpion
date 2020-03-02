@@ -12,6 +12,8 @@ The setup command will do the following:
 - Generate a standard unobfuscated HTTP Grunt hosted at /default.exe
 - Generate a simple hosted HTA to download and trigger HTTP grunt at /default.hta
 - Build and Obfuscate 20-30 SMB Grunt Binary and host them at /{someid}.exe
+- Convert Obfuscated SMB Grunt Binaries to shellcode via donut and host them at /{someid}.bin
+- Generate Windows Service Exe Binaries for the SMB Grunts that load the obfuscated grunts via reflection.
 
 Assuming you've just setup the Covenant server, you can can run the following:
 
@@ -25,6 +27,28 @@ $ dotnet run -- -u user -p pass -s https://COVENANT:7443 -i setup --connect-addr
 ```
 
 You can also customize the listener first via the "addlistener" command and the pass the listener name via "--listener somename".
+
+## Additional Connect Addresses
+
+This may not be necssary so only do this if you get an extra Connect Address with your private IP or 127.0.0.1. Make the following changes to Covenant for the HTTPListener model. Hopefully it gets fixed soon or I find the bug if it's client side.
+
+```
+    public HttpListener()
+    {
+      this.Description = "Listens on HTTP protocol.";
+      try {
+        // this.ConnectAddresses = new List<string> {
+        //             Dns.GetHostAddresses(Dns.GetHostName())
+        //                 .FirstOrDefault(A => A.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+        //                 .ToString()
+        //         };
+        this.ConnectAddresses = new List<string>();
+
+      } catch (Exception) {
+        this.ConnectAddresses = new List<string>();
+      }
+    }
+```
 
 ## History
 
