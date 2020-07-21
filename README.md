@@ -1,5 +1,7 @@
 # Scorpion
 
+*Note*: This project targeted v0.4 of Covenant and will most likely not work with later builds. A restructuring of this project that targets v0.5 as well as generates code via Roslynn is planned, but will not be complete any time soon.
+
 This project is designed to to setup some intial assets in Covenant at boot. It is not meant to be a replacement for Elite or a complete remote CLI. This projects primary feature is the ability to generate an aggressive amount of obfuscated SMB grunt binaries via the "setup" command.
 
 This project needs to be run from a Windows System with the v4 .Net SDks and v2.2 Dotnet Core SDK. The project uses dotnet 2.2 to work but triggers builds via msbuild.exe. In addition, the Covenant.dll is required as a local dependency as apparent in Scorpion.csproj.
