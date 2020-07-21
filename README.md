@@ -1,6 +1,6 @@
 # Scorpion
 
-*Note*: This project targeted v0.4 of Covenant and will most likely not work with later builds. A restructuring of this project that targets v0.5 as well as generates code via Roslynn is planned, but will not be complete any time soon.
+**Note**: This project targeted v0.4 of Covenant and will most likely not work with later builds. A restructuring of this project that targets v0.5 as well as generates code via Roslynn is planned, but will not be complete any time soon.
 
 This project is designed to to setup some intial assets in Covenant at boot. It is not meant to be a replacement for Elite or a complete remote CLI. This projects primary feature is the ability to generate an aggressive amount of obfuscated SMB grunt binaries via the "setup" command.
 
